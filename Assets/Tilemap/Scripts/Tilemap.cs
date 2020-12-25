@@ -7,12 +7,7 @@ public class Tilemap {
 
     public event EventHandler OnLoaded;
 
-    private Grid<TilemapObject> grid;
-
-    public Vector3 position
-    {
-        get { return grid.position; }
-    }
+    public readonly Grid<TilemapObject> grid;
 
     public Tilemap(int width, int height, float cellSize, Vector3 originPosition) {
         grid = new Grid<TilemapObject>(width, height, cellSize, originPosition, (Grid<TilemapObject> g, int x, int y) => new TilemapObject(g, x, y));

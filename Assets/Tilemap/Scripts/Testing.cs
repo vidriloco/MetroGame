@@ -6,64 +6,51 @@ using CodeMonkey;
 
 public class Testing : MonoBehaviour {
 
-    [SerializeField] private TilemapVisual tilemapVisual;
-    private Tilemap tilemap;
+    //[SerializeField] private TilemapVisual tilemapVisual;
+
+    private Tilemap tilemapLeft;
+    private Tilemap tilemapRight;
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
+    private Lane laneLeft;
+    private Lane laneRight;
 
-    [SerializeField]
-    private GameObject carPrefab;
-    [SerializeField]
-    private float spawnDelay = 10;
-    private float nextSpawnTime;
+    [System.Serializable]
+    public struct MovingObject
+    {
+        public GameObject prefab;
+        public float speed;
+        public float frequency;
+    }
 
-    public float speed = 10.0f;
-    GameObject carMoving;
-    public Vector2 movement;
+    [SerializeField] private MovingObject[] movingObjects;
 
     private void Start() {
-        tilemap = new Tilemap(20, 10, 5f, Vector3.zero);
+        tilemapLeft = new Tilemap(10, 5, 5f, new Vector3(0, 10, 0));
+        tilemapRight = new Tilemap(10, 5, 5f, new Vector3(0, 50, 0));
 
-        tilemap.SetTilemapVisual(tilemapVisual);
+        //tilemap.SetTilemapVisual(tilemapVisual);
 
-        tilemap.Load();
-    }
+        //tilemap.Load();
 
-    private void Spawn()
-    {
-        nextSpawnTime = Time.time + spawnDelay;
-        carMoving = Instantiate(carPrefab, tilemap.position() + new Vector3(20*4,22,0), Quaternion.Euler(0, 0, 0));
-        
-    }
-
-    private bool ShouldSpawn()
-    {
-        return Time.time > nextSpawnTime;
+        laneLeft = new Lane(tilemapLeft, movingObjects, Lane.Direction.Left);
+        laneRight = new Lane(tilemapRight, movingObjects, Lane.Direction.Right);
     }
 
     void FixedUpdate()
     {
-        if(carMoving != null)
-        {
-            carMoving.GetComponent<Rigidbody>().velocity = new Vector2(-3, 0) * speed;
-        }
-    }
-
-    void moveCharacter(Vector2 direction)
-    {
-        //rb.velocity = direction * speed;
+        laneLeft.FixedUpdate();
+        laneRight.FixedUpdate();
     }
 
     private void Update() {
-        if(ShouldSpawn()) {
-            Spawn();
-        }
-
-        movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        laneLeft.Update();
+        laneRight.Update();
 
         if (Input.GetMouseButton(0)) {
+            
             Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-            tilemap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
+            tilemapLeft.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
         }
         
         if (Input.GetKeyDown(KeyCode.T)) {
@@ -115,11 +102,11 @@ public class Testing : MonoBehaviour {
 
 
         if (Input.GetKeyDown(KeyCode.P)) {
-            tilemap.Save();
+            tilemapLeft.Save();
             CMDebug.TextPopupMouse("Saved!");
         }
         if (Input.GetKeyDown(KeyCode.L)) {
-            tilemap.Load();
+            tilemapLeft.Load();
             CMDebug.TextPopupMouse("Loaded!");
         }
 
