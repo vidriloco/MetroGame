@@ -19,6 +19,7 @@ public class Testing : MonoBehaviour {
     public struct MovingObject
     {
         public GameObject prefab;
+        public int startingPositionAtY;
         public float speed;
         public float frequency;
     }

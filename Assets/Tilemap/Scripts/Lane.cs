@@ -55,7 +55,7 @@ public class Lane
         var startingX = direction == Direction.Left ? tilemap.grid.GetRightEnd() : tilemap.grid.GetLeftEnd();
         var quaternion = direction == Direction.Left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
         
-        var startingPosition = new Vector2(startingX, tilemap.grid.GetHeightAtPosition(3));
+        var startingPosition = new Vector2(startingX, tilemap.grid.GetHeightAtPosition(currentMovingObject.startingPositionAtY));
         movingObject = (GameObject) GameObject.Instantiate(currentMovingObject.prefab, startingPosition, quaternion);
 
         nextSpawnTime = Time.time + currentMovingObject.frequency;
