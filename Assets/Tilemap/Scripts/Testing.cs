@@ -19,6 +19,7 @@ public class Configurations
     [System.Serializable]
     public struct Vehicle
     {
+        public string id;
         public GameObject prefab;
         public int startingPositionAtY;
         public float speed;
