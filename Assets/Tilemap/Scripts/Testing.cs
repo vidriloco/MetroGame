@@ -4,16 +4,41 @@ using UnityEngine;
 using CodeMonkey.Utils;
 using CodeMonkey;
 
+
+public class Configurations
+{
+    [System.Serializable]
+    public struct Lane {
+        public int width;
+        public int height;
+        public float cellSize;
+        public Vector3 position;
+        [SerializeField] public Vehicle[] vehicles;
+    }
+
+    [System.Serializable]
+    public struct Vehicle
+    {
+        public GameObject prefab;
+        public int startingPositionAtY;
+        public float speed;
+        public float frequency;
+        [SerializeField] public Direction direction;
+
+        public enum Direction
+        {
+            Left,
+            Right
+        }
+    }
+}
+
+
 public class Testing : MonoBehaviour {
 
     //[SerializeField] private TilemapVisual tilemapVisual;
 
-    private Tilemap tilemapLeft;
-    private Tilemap tilemapRight;
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
-
-    private Lane laneLeft;
-    private Lane laneRight;
 
     [System.Serializable]
     public struct MovingObject
@@ -24,34 +49,41 @@ public class Testing : MonoBehaviour {
         public float frequency;
     }
 
-    [SerializeField] private MovingObject[] movingObjects;
+    [SerializeField] private Configurations.Lane[] lanesConfigurations;
+    private ArrayList lanes = new ArrayList();
 
     private void Start() {
-        tilemapLeft = new Tilemap(10, 5, 5f, new Vector3(0, 10, 0));
-        tilemapRight = new Tilemap(10, 5, 5f, new Vector3(0, 50, 0));
+        foreach(var laneConfig in lanesConfigurations)
+        {
+            var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
+            lanes.Add(new Lane(tileMap, laneConfig.vehicles, laneConfig.direction));
+        }
 
         //tilemap.SetTilemapVisual(tilemapVisual);
 
         //tilemap.Load();
-
-        laneLeft = new Lane(tilemapLeft, movingObjects, Lane.Direction.Left);
-        laneRight = new Lane(tilemapRight, movingObjects, Lane.Direction.Right);
     }
 
     void FixedUpdate()
     {
-        laneLeft.FixedUpdate();
-        laneRight.FixedUpdate();
+        foreach(var item in lanes.ToArray())
+        {
+            var lane = (Lane)item;
+            lane.FixedUpdate();
+        }
     }
 
     private void Update() {
-        laneLeft.Update();
-        laneRight.Update();
+        foreach (var item in lanes.ToArray())
+        {
+            var lane = (Lane) item;
+            lane.Update();
+        }
 
         if (Input.GetMouseButton(0)) {
             
             Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-            tilemapLeft.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
+            //tilemapLeft.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
         }
         
         if (Input.GetKeyDown(KeyCode.T)) {
@@ -103,11 +135,11 @@ public class Testing : MonoBehaviour {
 
 
         if (Input.GetKeyDown(KeyCode.P)) {
-            tilemapLeft.Save();
+            //tilemapLeft.Save();
             CMDebug.TextPopupMouse("Saved!");
         }
         if (Input.GetKeyDown(KeyCode.L)) {
-            tilemapLeft.Load();
+            //tilemapLeft.Load();
             CMDebug.TextPopupMouse("Loaded!");
         }
 

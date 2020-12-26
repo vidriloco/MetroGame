@@ -4,26 +4,19 @@ using UnityEngine;
 
 public class Lane
 {
-    public enum Direction
-    {
-        Left,
-        Right
-    }
-
-    private Direction direction;
     private Tilemap tilemap;
-    private Testing.MovingObject[] movingObjects;
+    private Configurations.Vehicle[] vehicles;
+    private ArrayList movingVehicles = new ArrayList();
 
     private float nextSpawnTime;
 
-    private Testing.MovingObject currentMovingObject;
+    private Configurations.Vehicle currentVehicle;
     private GameObject movingObject;
 
-    public Lane(Tilemap tilemap, Testing.MovingObject[] movingObjects, Direction direction)
+    public Lane(Tilemap tilemap, Configurations.Vehicle[] vehicles)
     {
         this.tilemap = tilemap;
-        this.movingObjects = movingObjects;
-        this.direction = direction;
+        this.vehicles = vehicles;
     }
 
     public void Update()
@@ -40,25 +33,26 @@ public class Lane
     {
         if (movingObject != null)
         {
-            var vectorDirection = direction == Direction.Left ? new Vector2(-1, 0) : new Vector2(1, 0);
-            movingObject.GetComponent<Rigidbody>().velocity = vectorDirection * currentMovingObject.speed;
+            var vectorDirection = currentVehicle.direction == Configurations.Vehicle.Direction.Left ? new Vector2(-1, 0) : new Vector2(1, 0);
+            movingObject.GetComponent<Rigidbody>().velocity = vectorDirection * currentVehicle.speed;
         }
     }
 
     private void Spawn()
     {
+
         var rand = new System.Random();
-        var indexNumber = rand.Next(0, movingObjects.Length);
+        var indexNumber = rand.Next(0, vehicles.Length);
 
-        currentMovingObject = movingObjects[indexNumber];
+        currentVehicle = vehicles[indexNumber];
 
-        var startingX = direction == Direction.Left ? tilemap.grid.GetRightEnd() : tilemap.grid.GetLeftEnd();
-        var quaternion = direction == Direction.Left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+        var startingX = currentVehicle.direction == Configurations.Vehicle.Direction.Left ? tilemap.grid.GetRightEnd() : tilemap.grid.GetLeftEnd();
+        var quaternion = currentVehicle.direction == Configurations.Vehicle.Direction.Left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
         
-        var startingPosition = new Vector2(startingX, tilemap.grid.GetHeightAtPosition(currentMovingObject.startingPositionAtY));
-        movingObject = (GameObject) GameObject.Instantiate(currentMovingObject.prefab, startingPosition, quaternion);
+        var startingPosition = new Vector2(startingX, tilemap.grid.GetHeightAtPosition(currentVehicle.startingPositionAtY));
+        movingObject = (GameObject) GameObject.Instantiate(currentVehicle.prefab, startingPosition, quaternion);
 
-        nextSpawnTime = Time.time + currentMovingObject.frequency;
+        nextSpawnTime = Time.time + currentVehicle.frequency;
     }
 
     private void Destroy()
@@ -67,7 +61,7 @@ public class Lane
 
         var renderer = movingObject.GetComponent<SpriteRenderer>();
 
-        if (direction == Direction.Left)
+        if (currentVehicle.direction == Configurations.Vehicle.Direction.Left)
         {
             if (renderer.bounds.max.x < tilemap.grid.GetLeftEnd())
             {
