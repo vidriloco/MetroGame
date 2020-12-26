@@ -56,7 +56,7 @@ public class Testing : MonoBehaviour {
         foreach(var laneConfig in lanesConfigurations)
         {
             var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
-            lanes.Add(new Lane(tileMap, laneConfig.vehicles, laneConfig.direction));
+            lanes.Add(new Lane(tileMap, laneConfig.vehicles));
         }
 
         //tilemap.SetTilemapVisual(tilemapVisual);

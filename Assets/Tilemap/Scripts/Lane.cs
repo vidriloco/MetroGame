@@ -1,79 +1,105 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Lane
 {
     private Tilemap tilemap;
-    private Configurations.Vehicle[] vehicles;
-    private ArrayList movingVehicles = new ArrayList();
+    private Configurations.Vehicle[] vehiclesConfigs;
+    private GameObjectInLane[] movingVehicles;
 
     private float nextSpawnTime;
 
-    private Configurations.Vehicle currentVehicle;
-    private GameObject movingObject;
+    private class GameObjectInLane
+    {
+        public float nextSpawnTime;
+        public GameObject gameObject;
 
-    public Lane(Tilemap tilemap, Configurations.Vehicle[] vehicles)
+        public GameObjectInLane(float nextSpawnTime, GameObject gameObject)
+        {
+            this.nextSpawnTime = nextSpawnTime;
+            this.gameObject = gameObject;
+        }
+    }
+
+    public Lane(Tilemap tilemap, Configurations.Vehicle[] vehiclesConfigs)
     {
         this.tilemap = tilemap;
-        this.vehicles = vehicles;
+        this.vehiclesConfigs = vehiclesConfigs;
+        this.movingVehicles = new GameObjectInLane[vehiclesConfigs.Length];
     }
 
     public void Update()
     {
-        if(Time.time > nextSpawnTime)
-        {
-            Spawn();
-        }
-
-        Destroy();
+        Spawn();
     }
 
     public void FixedUpdate()
     {
-        if (movingObject != null)
+        for (var i = 0; i < movingVehicles.Length; i++)
         {
-            var vectorDirection = currentVehicle.direction == Configurations.Vehicle.Direction.Left ? new Vector2(-1, 0) : new Vector2(1, 0);
-            movingObject.GetComponent<Rigidbody>().velocity = vectorDirection * currentVehicle.speed;
+            if(movingVehicles[i] != null)
+            {
+                var vectorDirection = vehiclesConfigs[i].direction == Configurations.Vehicle.Direction.Left ? new Vector2(-1, 0) : new Vector2(1, 0);
+                movingVehicles[i].gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * vehiclesConfigs[i].speed;
+            }
         }
     }
 
     private void Spawn()
     {
+        for(var i = 0; i < vehiclesConfigs.Length; i++)
+        {
+            var vehicleConfig = vehiclesConfigs[i];
 
-        var rand = new System.Random();
-        var indexNumber = rand.Next(0, vehicles.Length);
-
-        currentVehicle = vehicles[indexNumber];
-
-        var startingX = currentVehicle.direction == Configurations.Vehicle.Direction.Left ? tilemap.grid.GetRightEnd() : tilemap.grid.GetLeftEnd();
-        var quaternion = currentVehicle.direction == Configurations.Vehicle.Direction.Left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-        
-        var startingPosition = new Vector2(startingX, tilemap.grid.GetHeightAtPosition(currentVehicle.startingPositionAtY));
-        movingObject = (GameObject) GameObject.Instantiate(currentVehicle.prefab, startingPosition, quaternion);
-
-        nextSpawnTime = Time.time + currentVehicle.frequency;
+            if (movingVehicles[i] == null || Time.time > movingVehicles[i].nextSpawnTime)
+            {
+                movingVehicles[i] = InitializeMovingVehicleWith(vehicleConfig);
+            } else
+            {
+                if (DestroyMovingObject(movingVehicles[i], vehicleConfig))
+                {
+                    movingVehicles[i] = null;
+                }
+            }
+        }
     }
 
-    private void Destroy()
+    private GameObjectInLane InitializeMovingVehicleWith(Configurations.Vehicle vehicleConfig)
     {
-        if(movingObject == null) { return; }
+        var startingX = vehicleConfig.direction == Configurations.Vehicle.Direction.Left ? tilemap.grid.GetRightEnd() : tilemap.grid.GetLeftEnd();
+        var quaternion = vehicleConfig.direction == Configurations.Vehicle.Direction.Left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 
-        var renderer = movingObject.GetComponent<SpriteRenderer>();
+        var startingPosition = new Vector2(startingX, tilemap.grid.GetHeightAtPosition(vehicleConfig.startingPositionAtY));
+        var movingVehicle = (GameObject)GameObject.Instantiate(vehicleConfig.prefab, startingPosition, quaternion);
 
-        if (currentVehicle.direction == Configurations.Vehicle.Direction.Left)
+        return new GameObjectInLane(Time.time + vehicleConfig.frequency, movingVehicle);
+    }
+
+    private bool DestroyMovingObject(GameObjectInLane movingObject, Configurations.Vehicle vehicleConfig)
+    {
+        if(movingObject == null) { return false; }
+
+        var renderer = movingObject.gameObject.GetComponent<SpriteRenderer>();
+
+        if (vehicleConfig.direction == Configurations.Vehicle.Direction.Left)
         {
             if (renderer.bounds.max.x < tilemap.grid.GetLeftEnd())
             {
-                GameObject.DestroyImmediate(movingObject);
+                GameObject.DestroyImmediate(movingObject.gameObject);
+                return true;
             }
         }
         else
         {
             if (renderer.bounds.min.x > tilemap.grid.GetRightEnd())
             {
-                GameObject.DestroyImmediate(movingObject);
+                GameObject.DestroyImmediate(movingObject.gameObject);
+                return true;
             }
         }
+
+        return false;
     }
 }
