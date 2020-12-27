@@ -14,7 +14,6 @@ public class Lane
 
     private class GameObjectInLane
     {
-        public String id;
         public float nextSpawnTime;
         public Configurations.Vehicle config;
         public GameObject gameObject;
@@ -62,6 +61,7 @@ public class Lane
             }
 
             movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * movingVehicle.config.speed;
+
             TryToDestroyMovingObject(movingVehicle);
         }
     }
@@ -91,11 +91,24 @@ public class Lane
                 break;
         }
 
-        var movingVehicle = (GameObject)GameObject.Instantiate(vehicleConfig.prefab, startingPosition, quaternion);
+        var movingVehicle = (GameObject) GameObject.Instantiate(vehicleConfig.prefab, startingPosition, quaternion);
+        InstantiatePrefabsForGameObject(vehicleConfig.id, movingVehicle, vehicleConfig.childrenObjects);
 
         var vehicleMoving = new GameObjectInLane(Time.time + vehicleConfig.frequency, movingVehicle, vehicleConfig);
         movingVehicles.Add(vehicleMoving);
         timeTables[vehicleConfig.id] = vehicleMoving.nextSpawnTime;
+    }
+
+    private void InstantiatePrefabsForGameObject(String id, GameObject gameObject, GameObject[] childrenPrefabs)
+    {
+
+        foreach (var prefab in childrenPrefabs)
+        {
+            var attachedPrefab = (GameObject) GameObject.Instantiate(prefab, gameObject.transform.position + new Vector3(2,3), Quaternion.Euler(0, 0, 0));
+            attachedPrefab.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            attachedPrefab.transform.SetParent(gameObject.gameObject.transform);
+        }
+
     }
 
     private void Spawn()

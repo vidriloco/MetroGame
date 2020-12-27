@@ -32,7 +32,7 @@ public class Grid<TGridObject> {
             }
         }
 
-        DebugGrid();
+        //DebugGrid();
     }
 
     public void DebugGrid()

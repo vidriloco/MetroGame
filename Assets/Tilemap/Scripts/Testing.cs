@@ -7,6 +7,7 @@ using CodeMonkey;
 
 public class Configurations
 {
+
     [System.Serializable]
     public struct Lane {
         public int width;
@@ -39,6 +40,8 @@ public class Configurations
             public Direction direction;
             public int value;
         }
+
+        [SerializeField] public GameObject[] childrenObjects;
     }
 }
 
@@ -59,6 +62,7 @@ public class Testing : MonoBehaviour {
     }
 
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
+
     private ArrayList lanes = new ArrayList();
 
     private void Start() {
