@@ -66,9 +66,24 @@ public class Grid<TGridObject> {
         return position.x;
     }
 
+    public float GetTopEnd()
+    {
+        return position.y + GetWorldHeight();
+    }
+
+    public float GetBottomEnd()
+    {
+        return position.y;
+    }
+
     public float GetHeightAtPosition(int y)
     {
         return (cellSize * y) + position.y;
+    }
+
+    public float GetWidthAtPosition(int x)
+    {
+        return (cellSize * x) + position.x;
     }
 
     public float GetWorldWidth()

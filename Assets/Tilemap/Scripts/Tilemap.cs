@@ -54,8 +54,6 @@ public class Tilemap {
         OnLoaded?.Invoke(this, EventArgs.Empty);
     }
 
-
-
     /*
      * Represents a single Tilemap Object that exists in each Grid Cell Position
      * */

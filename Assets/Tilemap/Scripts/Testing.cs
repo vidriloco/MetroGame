@@ -21,15 +21,23 @@ public class Configurations
     {
         public string id;
         public GameObject prefab;
-        public int startingPositionAtY;
+        [SerializeField]  public InitialPosition startingPosition;
         public float speed;
         public float frequency;
-        [SerializeField] public Direction direction;
 
         public enum Direction
         {
-            Left,
-            Right
+            LeftToRight,
+            RightToLeft,
+            TopToBottom,
+            BottomToTop
+        }
+
+        [System.Serializable]
+        public struct InitialPosition
+        {
+            public Direction direction;
+            public int value;
         }
     }
 }
