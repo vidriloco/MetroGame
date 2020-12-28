@@ -25,6 +25,11 @@ public class Tilemap
         tilemapVisual.SetGrid(this, grid);
     }
 
+    public void SetFloatingTilemapVisual(FloatingTilemapVisual tilemapVisual)
+    {
+        tilemapVisual.SetGrid(this, grid);
+    }
+
     /*
      * Save - Load
      * */

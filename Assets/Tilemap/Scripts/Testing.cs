@@ -21,6 +21,7 @@ public class Configurations
     public struct Vehicle
     {
         public string id;
+        public bool isPrefab;
         public GameObject prefab;
         [SerializeField]  public InitialPosition startingPosition;
         public float speed;
@@ -48,7 +49,8 @@ public class Configurations
 
 public class Testing : MonoBehaviour {
 
-    //[SerializeField] private TilemapVisual tilemapVisual;
+    [SerializeField] private TilemapVisual tilemapVisual;
+    [SerializeField] private FloatingTilemapVisual floatingTilemapVisual;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
@@ -69,10 +71,12 @@ public class Testing : MonoBehaviour {
         foreach(var laneConfig in lanesConfigurations)
         {
             var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
+            tileMap.SetFloatingTilemapVisual(floatingTilemapVisual);
+
+            laneConfig.vehicles[0].prefab = floatingTilemapVisual.pivotObject;
+
             lanes.Add(new Lane(tileMap, laneConfig.vehicles));
         }
-
-        //tilemap.SetTilemapVisual(tilemapVisual);
 
         //tilemap.Load();
     }
@@ -96,7 +100,11 @@ public class Testing : MonoBehaviour {
         if (Input.GetMouseButton(0)) {
             
             Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-            //tilemapLeft.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
+            foreach (var item in lanes.ToArray())
+            {
+                var lane = (Lane)item;
+                lane.tilemap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
+            }
         }
         
         if (Input.GetKeyDown(KeyCode.T)) {
@@ -148,11 +156,19 @@ public class Testing : MonoBehaviour {
 
 
         if (Input.GetKeyDown(KeyCode.P)) {
-            //tilemapLeft.Save();
+            foreach (var item in lanes.ToArray())
+            {
+                var lane = (Lane)item;
+                lane.tilemap.Save();
+            }
             CMDebug.TextPopupMouse("Saved!");
         }
         if (Input.GetKeyDown(KeyCode.L)) {
-            //tilemapLeft.Load();
+            foreach (var item in lanes.ToArray())
+            {
+                var lane = (Lane)item;
+                lane.tilemap.Load();
+            }
             CMDebug.TextPopupMouse("Loaded!");
         }
 

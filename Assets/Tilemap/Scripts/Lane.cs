@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Lane
 {
-    private Tilemap tilemap;
+    public Tilemap tilemap;
     private Configurations.Vehicle[] vehiclesConfigs;
 
     private ArrayList movingVehicles = new ArrayList();
@@ -91,7 +91,13 @@ public class Lane
                 break;
         }
 
-        var movingVehicle = (GameObject) GameObject.Instantiate(vehicleConfig.prefab, startingPosition, quaternion);
+        var movingVehicle = vehicleConfig.prefab;
+        movingVehicle.transform.position = startingPosition;
+
+        if (vehicleConfig.isPrefab) {
+            movingVehicle = (GameObject)GameObject.Instantiate(vehicleConfig.prefab, startingPosition, quaternion);
+        }
+
         InstantiatePrefabsForGameObject(vehicleConfig.id, movingVehicle, vehicleConfig.childrenObjects);
 
         var vehicleMoving = new GameObjectInLane(Time.time + vehicleConfig.frequency, movingVehicle, vehicleConfig);
