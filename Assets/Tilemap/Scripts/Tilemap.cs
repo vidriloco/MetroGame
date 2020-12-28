@@ -25,11 +25,6 @@ public class Tilemap
         tilemapVisual.SetGrid(this, grid);
     }
 
-    public void SetFloatingTilemapVisual(FloatingTilemapVisual tilemapVisual)
-    {
-        tilemapVisual.SetGrid(this, grid);
-    }
-
     /*
      * Save - Load
      * */
@@ -107,8 +102,6 @@ public class Tilemap
         public override string ToString() {
             return tilemapSprite.ToString();
         }
-
-
 
         [System.Serializable]
         public class SaveObject {

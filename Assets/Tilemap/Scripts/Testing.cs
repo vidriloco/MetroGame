@@ -50,7 +50,9 @@ public class Configurations
 public class Testing : MonoBehaviour {
 
     [SerializeField] private TilemapVisual tilemapVisual;
-    [SerializeField] private FloatingTilemapVisual floatingTilemapVisual;
+
+    [SerializeField] private GameObject pivotObject;
+    [SerializeField] private GameObject prefab;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
@@ -65,17 +67,16 @@ public class Testing : MonoBehaviour {
 
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
-    private ArrayList lanes = new ArrayList();
+    private readonly ArrayList lanes = new ArrayList();
 
     private void Start() {
+        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 10, 5, pivotObject.transform.position, (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y));
+
         foreach(var laneConfig in lanesConfigurations)
         {
             var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
-            tileMap.SetFloatingTilemapVisual(floatingTilemapVisual);
-
-            laneConfig.vehicles[0].prefab = floatingTilemapVisual.pivotObject;
-
-            lanes.Add(new Lane(tileMap, laneConfig.vehicles));
+            var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject, prefab);
+            lanes.Add(new Lane(tileMap, laneConfig.vehicles, floatingTilemap));
         }
 
         //tilemap.Load();
