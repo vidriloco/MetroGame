@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Lane
@@ -12,7 +13,9 @@ public class Lane
 
     private ArrayList movingVehicles = new ArrayList();
 
-    public Dictionary<String, float> timeTables = new Dictionary<string, float>();
+    public Dictionary<String, float> frequencies = new Dictionary<string, float>();
+    public Dictionary<String, Configurations.Vehicle.Movement?> sequences = new Dictionary<string, Configurations.Vehicle.Movement?>();
+    public Dictionary<String, int?> indexes = new Dictionary<string, int?>();
 
     public Lane(Tilemap tilemap, Configurations.Vehicle[] vehiclesConfigs, FloatingTilemapVisual floatingTilemap)
     {
@@ -50,9 +53,38 @@ public class Lane
                     break;
             }
 
-            movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * movingVehicle.config.speed;
+            UpdateSpeedAsync(0, movingVehicle);
+            indexes[movingVehicle.config.id] = 0;
+            if (!sequences.ContainsKey(movingVehicle.config.id))
+            {
+                Debug.Log("Hola");
+                movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * 0;
+            } else
+            {
+                Configurations.Vehicle.Movement sequence = sequences[movingVehicle.config.id].GetValueOrDefault();
+
+                movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * sequence.speed;
+            }
 
             TryToDestroyMovingObject(movingVehicle);
+        }
+    }
+
+    private async Task UpdateSpeedAsync(int index, VehicleInGameObject vehicle)
+    {
+        Debug.Log("Adios");
+
+        var movements = vehicle.config.movements;
+        if (index < movements.Length && indexes[vehicle.config.id] != index)
+        {
+            Debug.Log(4234234);
+
+            var movement = vehicle.config.movements[index];
+            sequences[vehicle.config.id] = movement;
+            await Task.Delay((int) movement.duration);
+            UpdateSpeedAsync(index+1, vehicle);
+
+            indexes[vehicle.config.id] = index+1;
         }
     }
 
@@ -65,14 +97,14 @@ public class Lane
 
         var vehicleMoving = vehicleFactory.LoadVehicleFromConfiguration(vehicleConfig);
         movingVehicles.Add(vehicleMoving);
-        timeTables[vehicleConfig.id] = vehicleMoving.nextSpawnTime;
+        frequencies[vehicleConfig.id] = vehicleMoving.nextSpawnTime;
     }
 
     private void Spawn()
     {
         foreach(var vehicleConfig in vehiclesConfigs)
         {
-            if (!timeTables.ContainsKey(vehicleConfig.id) || Time.time > timeTables[vehicleConfig.id])
+            if (!frequencies.ContainsKey(vehicleConfig.id) || Time.time > frequencies[vehicleConfig.id])
             {
                 InstantiateVehicleFrom(vehicleConfig);
             }
@@ -92,6 +124,7 @@ public class Lane
                 {
                     GameObject.DestroyImmediate(movingObject.gameObject);
                     movingVehicles.Remove(movingObject);
+                    sequences[movingObject.config.id] = null;
                 }
                 break;
             case Configurations.Vehicle.Direction.RightToLeft:
@@ -99,6 +132,7 @@ public class Lane
                 {
                     GameObject.DestroyImmediate(movingObject.gameObject);
                     movingVehicles.Remove(movingObject);
+                    sequences[movingObject.config.id] = null;
                 }
                 break;
             case Configurations.Vehicle.Direction.TopToBottom:
@@ -106,6 +140,7 @@ public class Lane
                 {
                     GameObject.DestroyImmediate(movingObject.gameObject);
                     movingVehicles.Remove(movingObject);
+                    sequences[movingObject.config.id] = null;
                 }
                 break;
             case Configurations.Vehicle.Direction.BottomToTop:
@@ -113,6 +148,7 @@ public class Lane
                 {
                     GameObject.DestroyImmediate(movingObject.gameObject);
                     movingVehicles.Remove(movingObject);
+                    sequences[movingObject.config.id] = null;
                 }
                 break;
         }

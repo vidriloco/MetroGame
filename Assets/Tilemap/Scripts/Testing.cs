@@ -23,8 +23,10 @@ public class Configurations
         public string id;
         public bool isPrefab;
         public GameObject prefab;
-        [SerializeField]  public InitialPosition startingPosition;
-        public float speed;
+
+        [SerializeField] public InitialPosition startingPosition;
+        [SerializeField] public Movement[] movements;
+
         public float frequency;
 
         public enum Direction
@@ -33,6 +35,13 @@ public class Configurations
             RightToLeft,
             TopToBottom,
             BottomToTop
+        }
+
+        [System.Serializable]
+        public struct Movement
+        {
+            public float speed;
+            public float duration;
         }
 
         [System.Serializable]
