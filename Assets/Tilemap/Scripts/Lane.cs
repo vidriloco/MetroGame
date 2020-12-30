@@ -16,10 +16,20 @@ public class Lane
     public Dictionary<String, float?> frequencies = new Dictionary<string, float?>();
     public Dictionary<String, Configurations.Vehicle.InterpolatedMovement?> sequences = new Dictionary<string, Configurations.Vehicle.InterpolatedMovement?>();
 
-    public float lastTime = 0;
-    public int index = 0;
+    private Dictionary<String, Timing> timings = new Dictionary<string, Timing>();
 
-    
+    private class Timing
+    {
+        public float lastTime;
+        public int index;
+
+        public Timing(float lastTime, int index)
+        {
+            this.lastTime = lastTime;
+            this.index = index;
+        }
+    }
+
 
     public Lane(Tilemap tilemap, Configurations.Vehicle[] vehiclesConfigs, FloatingTilemapVisual floatingTilemap)
     {
@@ -75,15 +85,21 @@ public class Lane
     {
         var movements = vehicle.config.movements;
 
-        if (index < movements.Length)
+        if(!timings.ContainsKey(vehicle.config.id))
         {
-            var movement = vehicle.config.movements[index];
-            if (Time.time - lastTime >= movement.duration)
+            timings[vehicle.config.id] = new Timing(0, 0);
+        }
+
+        var timing = timings[vehicle.config.id];
+        if (timing.index < movements.Length)
+        {
+            var movement = vehicle.config.movements[timing.index];
+            if (Time.time - timing.lastTime >= movement.duration)
             {
-                Debug.Log("Idx: " + index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - lastTime));
-                lastTime = Time.time;
+                Debug.Log("Idx: " + timing.index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - timing.lastTime));
+                timings[vehicle.config.id].lastTime = Time.time;
                 sequences[vehicle.config.id] = movement;
-                index = index + 1;
+                timings[vehicle.config.id].index = timing.index + 1;
             }
         }
     }
@@ -117,8 +133,7 @@ public class Lane
         movingVehicles.Remove(movingObject);
         sequences.Remove(movingObject.config.id);
         frequencies.Remove(movingObject.config.id);
-        index = 0;
-        lastTime = 0;
+        timings.Remove(movingObject.config.id);
     }
 
     private void TryToDestroyMovingObject(MovingObject movingObject)
