@@ -31,8 +31,6 @@ public class Grid<TGridObject> {
                 gridArray[x, y] = createGridObject(this, x, y);
             }
         }
-
-        //DebugGrid();
     }
 
     public void DebugGrid()

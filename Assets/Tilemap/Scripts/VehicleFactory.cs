@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VehicleInGameObject
+public class MovingObject
 {
     public float nextSpawnTime;
     public Configurations.Vehicle config;
     public GameObject gameObject;
+    public int? index = null;
 
-    public VehicleInGameObject(float nextSpawnTime, GameObject gameObject, Configurations.Vehicle vehicleConfig)
+    public MovingObject(float nextSpawnTime, GameObject gameObject, Configurations.Vehicle vehicleConfig)
     {
         this.nextSpawnTime = nextSpawnTime;
         this.gameObject = gameObject;
@@ -48,7 +49,7 @@ public class VehicleFactory
         configuration.prefab.transform.rotation = quaternion;
     }
 
-    public VehicleInGameObject LoadVehicleFromConfiguration(Configurations.Vehicle configuration)
+    public MovingObject LoadVehicleFromConfiguration(Configurations.Vehicle configuration)
     {
         Vector2 startingPosition = Vector2.zero;
         
@@ -75,9 +76,16 @@ public class VehicleFactory
         }
 
         configuration.prefab.transform.position = startingPosition;
+        
         InstantiatePrefabsForGameObject(configuration.id, configuration.prefab, configuration.childrenObjects);
 
-        return new VehicleInGameObject(Time.time + configuration.frequency, configuration.prefab, configuration);
+        float frequency = 0;
+        foreach(var movement in configuration.movements)
+        {
+            frequency += movement.duration;
+        }
+
+        return new MovingObject(Time.time + frequency, configuration.prefab, configuration);
     }
 
     private void InstantiatePrefabsForGameObject(String id, GameObject gameObject, GameObject[] childrenPrefabs)

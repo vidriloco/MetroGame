@@ -4,58 +4,6 @@ using UnityEngine;
 using CodeMonkey.Utils;
 using CodeMonkey;
 
-
-public class Configurations
-{
-
-    [System.Serializable]
-    public struct Lane {
-        public int width;
-        public int height;
-        public float cellSize;
-        public Vector3 position;
-        [SerializeField] public Vehicle[] vehicles;
-    }
-
-    [System.Serializable]
-    public struct Vehicle
-    {
-        public string id;
-        public bool isPrefab;
-        public GameObject prefab;
-
-        [SerializeField] public InitialPosition startingPosition;
-        [SerializeField] public Movement[] movements;
-
-        public float frequency;
-
-        public enum Direction
-        {
-            LeftToRight,
-            RightToLeft,
-            TopToBottom,
-            BottomToTop
-        }
-
-        [System.Serializable]
-        public struct Movement
-        {
-            public float speed;
-            public float duration;
-        }
-
-        [System.Serializable]
-        public struct InitialPosition
-        {
-            public Direction direction;
-            public int value;
-        }
-
-        [SerializeField] public GameObject[] childrenObjects;
-    }
-}
-
-
 public class Testing : MonoBehaviour {
 
     [SerializeField] private TilemapVisual tilemapVisual;
@@ -80,7 +28,7 @@ public class Testing : MonoBehaviour {
 
     private void Start() {
         Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 10, 5, pivotObject.transform.position, (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y));
-
+        
         foreach(var laneConfig in lanesConfigurations)
         {
             var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);

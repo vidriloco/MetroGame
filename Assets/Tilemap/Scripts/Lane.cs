@@ -13,9 +13,13 @@ public class Lane
 
     private ArrayList movingVehicles = new ArrayList();
 
-    public Dictionary<String, float> frequencies = new Dictionary<string, float>();
-    public Dictionary<String, Configurations.Vehicle.Movement?> sequences = new Dictionary<string, Configurations.Vehicle.Movement?>();
-    public Dictionary<String, int?> indexes = new Dictionary<string, int?>();
+    public Dictionary<String, float?> frequencies = new Dictionary<string, float?>();
+    public Dictionary<String, Configurations.Vehicle.InterpolatedMovement?> sequences = new Dictionary<string, Configurations.Vehicle.InterpolatedMovement?>();
+
+    public float lastTime = 0;
+    public int index = 0;
+
+    
 
     public Lane(Tilemap tilemap, Configurations.Vehicle[] vehiclesConfigs, FloatingTilemapVisual floatingTilemap)
     {
@@ -32,9 +36,10 @@ public class Lane
 
     public void FixedUpdate()
     {
+
         for(var index = 0; index < movingVehicles.Count; index++)
         {
-            var movingVehicle = (VehicleInGameObject) movingVehicles[index];
+            var movingVehicle = (MovingObject) movingVehicles[index];
             Vector2 vectorDirection = Vector2.zero;
 
             switch (movingVehicle.config.startingPosition.direction)
@@ -53,15 +58,11 @@ public class Lane
                     break;
             }
 
-            UpdateSpeedAsync(0, movingVehicle);
-            indexes[movingVehicle.config.id] = 0;
-            if (!sequences.ContainsKey(movingVehicle.config.id))
+            UpdateSpeedAsync(movingVehicle);
+
+            if (sequences.ContainsKey(movingVehicle.config.id))
             {
-                Debug.Log("Hola");
-                movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * 0;
-            } else
-            {
-                Configurations.Vehicle.Movement sequence = sequences[movingVehicle.config.id].GetValueOrDefault();
+                Configurations.Vehicle.InterpolatedMovement sequence = sequences[movingVehicle.config.id].GetValueOrDefault();
 
                 movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * sequence.speed;
             }
@@ -70,27 +71,26 @@ public class Lane
         }
     }
 
-    private async Task UpdateSpeedAsync(int index, VehicleInGameObject vehicle)
+    private void UpdateSpeedAsync(MovingObject vehicle)
     {
-        Debug.Log("Adios");
-
         var movements = vehicle.config.movements;
-        if (index < movements.Length && indexes[vehicle.config.id] != index)
+
+        if (index < movements.Length)
         {
-            Debug.Log(4234234);
-
             var movement = vehicle.config.movements[index];
-            sequences[vehicle.config.id] = movement;
-            await Task.Delay((int) movement.duration);
-            UpdateSpeedAsync(index+1, vehicle);
-
-            indexes[vehicle.config.id] = index+1;
+            if (Time.time - lastTime >= movement.duration)
+            {
+                Debug.Log("Idx: " + index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - lastTime));
+                lastTime = Time.time;
+                sequences[vehicle.config.id] = movement;
+                index = index + 1;
+            }
         }
     }
 
     private void InstantiateVehicleFrom(Configurations.Vehicle vehicleConfig)
     {
-        if(!vehicleConfig.isPrefab)
+        if (!vehicleConfig.isPrefab)
         {
             vehicleConfig.prefab = floatingTilemap.GetPivotWithVisualRepresentation();
         }
@@ -102,18 +102,34 @@ public class Lane
 
     private void Spawn()
     {
-        foreach(var vehicleConfig in vehiclesConfigs)
+        foreach (var vehicleConfig in vehiclesConfigs)
         {
-            if (!frequencies.ContainsKey(vehicleConfig.id) || Time.time > frequencies[vehicleConfig.id])
+            if (!frequencies.ContainsKey(vehicleConfig.id))
             {
                 InstantiateVehicleFrom(vehicleConfig);
             }
         }
     }
 
-    private void TryToDestroyMovingObject(VehicleInGameObject movingObject)
+    private void DestroyGameObject(MovingObject movingObject)
+    {
+        GameObject.DestroyImmediate(movingObject.gameObject);
+        movingVehicles.Remove(movingObject);
+        sequences.Remove(movingObject.config.id);
+        frequencies.Remove(movingObject.config.id);
+        index = 0;
+        lastTime = 0;
+    }
+
+    private void TryToDestroyMovingObject(MovingObject movingObject)
     {
         if(movingObject == null) { return; }
+
+        /*if(Time.time > frequencies[movingObject.config.id])
+        {
+            DestroyGameObject(movingObject);
+            return;
+        }*/
 
         var renderer = movingObject.gameObject.GetComponent<SpriteRenderer>();
 
@@ -122,33 +138,25 @@ public class Lane
             case Configurations.Vehicle.Direction.LeftToRight:
                 if (renderer.bounds.min.x > tilemap.grid.GetRightEnd())
                 {
-                    GameObject.DestroyImmediate(movingObject.gameObject);
-                    movingVehicles.Remove(movingObject);
-                    sequences[movingObject.config.id] = null;
+                    DestroyGameObject(movingObject);
                 }
                 break;
             case Configurations.Vehicle.Direction.RightToLeft:
                 if (renderer.bounds.max.x < tilemap.grid.GetLeftEnd())
                 {
-                    GameObject.DestroyImmediate(movingObject.gameObject);
-                    movingVehicles.Remove(movingObject);
-                    sequences[movingObject.config.id] = null;
+                    DestroyGameObject(movingObject);
                 }
                 break;
             case Configurations.Vehicle.Direction.TopToBottom:
                 if (renderer.bounds.max.y < tilemap.grid.GetBottomEnd())
                 {
-                    GameObject.DestroyImmediate(movingObject.gameObject);
-                    movingVehicles.Remove(movingObject);
-                    sequences[movingObject.config.id] = null;
+                    DestroyGameObject(movingObject);
                 }
                 break;
             case Configurations.Vehicle.Direction.BottomToTop:
                 if (renderer.bounds.min.y > tilemap.grid.GetTopEnd())
                 {
-                    GameObject.DestroyImmediate(movingObject.gameObject);
-                    movingVehicles.Remove(movingObject);
-                    sequences[movingObject.config.id] = null;
+                    DestroyGameObject(movingObject);
                 }
                 break;
         }
