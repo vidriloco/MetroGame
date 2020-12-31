@@ -13,20 +13,20 @@ public class Lane
 
     private ArrayList movingVehicles = new ArrayList();
 
-    public Dictionary<String, float?> frequencies = new Dictionary<string, float?>();
-    public Dictionary<String, Configurations.Vehicle.InterpolatedMovement?> sequences = new Dictionary<string, Configurations.Vehicle.InterpolatedMovement?>();
+    private Dictionary<String, TimeSequence> sequences = new Dictionary<string, TimeSequence>();
 
-    private Dictionary<String, Timing> timings = new Dictionary<string, Timing>();
-
-    private class Timing
+    private class TimeSequence
     {
         public float lastTime;
         public int index;
+        public float frequency;
+        public Configurations.Vehicle.InterpolatedMovement? movement;
 
-        public Timing(float lastTime, int index)
+        public TimeSequence(float lastTime, int index, float frequency)
         {
             this.lastTime = lastTime;
             this.index = index;
+            this.frequency = frequency;
         }
     }
 
@@ -41,7 +41,13 @@ public class Lane
 
     public void Update()
     {
-        Spawn();
+        foreach (var vehicleConfig in vehiclesConfigs)
+        {
+            if (!sequences.ContainsKey(vehicleConfig.id))
+            {
+                InstantiateVehicleFrom(vehicleConfig);
+            }
+        }
     }
 
     public void FixedUpdate()
@@ -72,9 +78,12 @@ public class Lane
 
             if (sequences.ContainsKey(movingVehicle.config.id))
             {
-                Configurations.Vehicle.InterpolatedMovement sequence = sequences[movingVehicle.config.id].GetValueOrDefault();
+                var movement = sequences[movingVehicle.config.id].movement;
 
-                movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * sequence.speed;
+                if(movement != null)
+                {
+                    movingVehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * movement.GetValueOrDefault().speed;
+                }
             }
 
             TryToDestroyMovingObject(movingVehicle);
@@ -85,21 +94,21 @@ public class Lane
     {
         var movements = vehicle.config.movements;
 
-        if(!timings.ContainsKey(vehicle.config.id))
+        if(!sequences.ContainsKey(vehicle.config.id))
         {
-            timings[vehicle.config.id] = new Timing(0, 0);
+            sequences[vehicle.config.id] = new TimeSequence(0, 0, vehicle.nextSpawnTime);
         }
 
-        var timing = timings[vehicle.config.id];
+        var timing = sequences[vehicle.config.id];
         if (timing.index < movements.Length)
         {
             var movement = vehicle.config.movements[timing.index];
             if (Time.time - timing.lastTime >= movement.duration)
             {
                 Debug.Log("Idx: " + timing.index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - timing.lastTime));
-                timings[vehicle.config.id].lastTime = Time.time;
-                sequences[vehicle.config.id] = movement;
-                timings[vehicle.config.id].index = timing.index + 1;
+                sequences[vehicle.config.id].lastTime = Time.time;
+                sequences[vehicle.config.id].movement = movement;
+                sequences[vehicle.config.id].index = timing.index + 1;
             }
         }
     }
@@ -113,18 +122,6 @@ public class Lane
 
         var vehicleMoving = vehicleFactory.LoadVehicleFromConfiguration(vehicleConfig);
         movingVehicles.Add(vehicleMoving);
-        frequencies[vehicleConfig.id] = vehicleMoving.nextSpawnTime;
-    }
-
-    private void Spawn()
-    {
-        foreach (var vehicleConfig in vehiclesConfigs)
-        {
-            if (!frequencies.ContainsKey(vehicleConfig.id))
-            {
-                InstantiateVehicleFrom(vehicleConfig);
-            }
-        }
     }
 
     private void DestroyGameObject(MovingObject movingObject)
@@ -132,8 +129,6 @@ public class Lane
         GameObject.DestroyImmediate(movingObject.gameObject);
         movingVehicles.Remove(movingObject);
         sequences.Remove(movingObject.config.id);
-        frequencies.Remove(movingObject.config.id);
-        timings.Remove(movingObject.config.id);
     }
 
     private void TryToDestroyMovingObject(MovingObject movingObject)
