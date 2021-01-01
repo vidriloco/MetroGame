@@ -33,7 +33,10 @@ public class Testing : MonoBehaviour {
         {
             var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
             var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject, prefab);
-            lanes.Add(new Lane(tileMap, laneConfig.vehicles, floatingTilemap));
+
+            var vehiclemanager = new VehicleManager(tileMap, laneConfig.vehicles, () => floatingTilemap.GetPivotWithVisualRepresentation());
+
+            lanes.Add(new Lane(tileMap, vehiclemanager));
         }
 
         //tilemap.Load();
