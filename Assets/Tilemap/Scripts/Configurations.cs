@@ -19,7 +19,6 @@ public class Configurations
     public struct Vehicle
     {
         public string id;
-        public bool isPrefab;
         public GameObject prefab;
 
         [SerializeField] public InitialPosition startingPosition;

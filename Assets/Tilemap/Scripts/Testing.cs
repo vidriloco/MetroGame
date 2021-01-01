@@ -7,36 +7,29 @@ using CodeMonkey;
 public class Testing : MonoBehaviour {
 
     [SerializeField] private TilemapVisual tilemapVisual;
+    [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
     [SerializeField] private GameObject pivotObject;
-    [SerializeField] private GameObject prefab;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
-
-    [System.Serializable]
-    public struct MovingObject
-    {
-        public GameObject prefab;
-        public int startingPositionAtY;
-        public float speed;
-        public float frequency;
-    }
-
-    [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
     private readonly ArrayList lanes = new ArrayList();
 
     private void Start() {
         Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 10, 5, pivotObject.transform.position, (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y));
-        
-        foreach(var laneConfig in lanesConfigurations)
+        var vehicleFactory = new VehicleFactory();
+        var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject);
+
+        foreach (var laneConfig in lanesConfigurations)
         {
             var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
-            var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject, prefab);
 
-            var vehiclemanager = new VehicleManager(tileMap, laneConfig.vehicles, () => floatingTilemap.GetPivotWithVisualRepresentation());
-
-            lanes.Add(new Lane(tileMap, vehiclemanager));
+            lanes.Add(new Lane(tileMap, new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
+            {
+                var complexPrefab = floatingTilemap.GetPivotWithVisualRepresentation(vehicle.prefab);
+                vehicle.prefab = complexPrefab;
+                return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
+            }));
         }
 
         //tilemap.Load();

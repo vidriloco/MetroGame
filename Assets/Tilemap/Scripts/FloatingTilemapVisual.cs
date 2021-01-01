@@ -7,16 +7,14 @@ public class FloatingTilemapVisual
 
     private Grid<Tilemap.TilemapObject> grid;
     private GameObject pivotObject;
-    private GameObject prefab;
 
-    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject pivotObject, GameObject prefab)
+    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject pivotObject)
     {
         this.grid = grid;
         this.pivotObject = pivotObject;
-        this.prefab = prefab;
     }
 
-    public GameObject GetPivotWithVisualRepresentation()
+    public GameObject GetPivotWithVisualRepresentation(GameObject prefab)
     {
         var pivot = (GameObject)GameObject.Instantiate(pivotObject);
         

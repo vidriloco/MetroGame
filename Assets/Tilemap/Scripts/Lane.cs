@@ -8,16 +8,24 @@ public class Lane
 {
     public Tilemap tilemap;
     private VehicleManager vehicleManager;
+    private VehicleFactory vehicleFactory;
+    private Func<Configurations.Vehicle, ManagedVehicle> vehicleInitialiser;
 
-    public Lane(Tilemap tilemap, VehicleManager vehicleManager)
+    public Lane(Tilemap tilemap, VehicleManager vehicleManager, Func<Configurations.Vehicle, ManagedVehicle> vehicleInitialiser)
     {
         this.tilemap = tilemap;
         this.vehicleManager = vehicleManager;
+        this.vehicleInitialiser = vehicleInitialiser;
     }
 
     public void Update()
     {
-        vehicleManager.InstantiateVehicles();
+        vehicleManager.InstantiateVehicles((Configurations.Vehicle vehicle) =>
+        {
+            var managedVehicle = vehicleInitialiser(vehicle);
+            SetInitialPositionForConfigurationVehicle(vehicle);
+            return managedVehicle;
+        });
     }
 
     public void FixedUpdate()
@@ -25,13 +33,36 @@ public class Lane
         vehicleManager.UpdateManagedVehicles(ShouldRemoveMovingObject);
     }
 
-    private bool ShouldRemoveMovingObject(MovingObject movingObject)
+    private void SetInitialPositionForConfigurationVehicle(Configurations.Vehicle vehicle)
     {
-        if(movingObject == null) { return false; }
+        Vector2 startingPosition = Vector2.zero;
 
-        var renderer = movingObject.gameObject.GetComponent<SpriteRenderer>();
+        switch (vehicle.startingPosition.direction)
+        {
+            case Configurations.Vehicle.Direction.LeftToRight:
+                startingPosition = new Vector2(tilemap.grid.GetLeftEnd(), tilemap.grid.GetHeightAtPosition(vehicle.startingPosition.value));
+                break;
+            case Configurations.Vehicle.Direction.RightToLeft:
+                startingPosition = new Vector2(tilemap.grid.GetRightEnd(), tilemap.grid.GetHeightAtPosition(vehicle.startingPosition.value));
+                break;
+            case Configurations.Vehicle.Direction.TopToBottom:
+                startingPosition = new Vector2(tilemap.grid.GetWidthAtPosition(vehicle.startingPosition.value), tilemap.grid.GetTopEnd());
+                break;
+            case Configurations.Vehicle.Direction.BottomToTop:
+                startingPosition = new Vector2(tilemap.grid.GetWidthAtPosition(vehicle.startingPosition.value), tilemap.grid.GetBottomEnd());
+                break;
+        }
 
-        switch (movingObject.config.startingPosition.direction)
+        vehicle.prefab.transform.position = startingPosition;
+    }
+
+    private bool ShouldRemoveMovingObject(ManagedVehicle vehicle)
+    {
+        if(vehicle == null) { return false; }
+
+        var renderer = vehicle.gameObject.GetComponent<SpriteRenderer>();
+
+        switch (vehicle.config.startingPosition.direction)
         {
             case Configurations.Vehicle.Direction.LeftToRight:
                 return renderer.bounds.min.x > tilemap.grid.GetRightEnd();

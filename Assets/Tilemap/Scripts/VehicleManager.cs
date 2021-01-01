@@ -8,15 +8,11 @@ public class VehicleManager
 {
 
     private Dictionary<String, TimeSequence> sequences = new Dictionary<string, TimeSequence>();
-    private ArrayList movingVehicles = new ArrayList();
-    private VehicleFactory vehicleFactory;
-    private Func<GameObject> gameObjectCreator;
+    private ArrayList vehicles = new ArrayList();
     private Configurations.Vehicle[] vehiclesConfigs;
 
-    public VehicleManager(Tilemap tilemap, Configurations.Vehicle[] vehiclesConfigs, Func<GameObject> gameObjectCreator)
+    public VehicleManager(Configurations.Vehicle[] vehiclesConfigs)
     {
-        this.vehicleFactory = new VehicleFactory(tilemap.grid);
-        this.gameObjectCreator = gameObjectCreator;
         this.vehiclesConfigs = vehiclesConfigs;
     }
 
@@ -42,7 +38,7 @@ public class VehicleManager
         return vectorDirection;
     }
 
-    private void UpdateTimingsFor(MovingObject vehicle)
+    private void UpdateTimingsFor(ManagedVehicle vehicle)
     {
         var movements = vehicle.config.movements;
 
@@ -57,7 +53,7 @@ public class VehicleManager
             var movement = movements[timing.index];
             if (Time.time - timing.lastTime >= movement.duration)
             {
-                Debug.Log("Idx: " + timing.index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - timing.lastTime));
+                //Debug.Log("Idx: " + timing.index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - timing.lastTime));
                 sequences[vehicle.config.id].lastTime = Time.time;
                 sequences[vehicle.config.id].movement = movement;
                 sequences[vehicle.config.id].index = timing.index + 1;
@@ -65,7 +61,7 @@ public class VehicleManager
         }
     }
 
-    private void UpdateSegmentSpeedForVehicle(MovingObject vehicle)
+    private void UpdateSegmentSpeedForVehicle(ManagedVehicle vehicle)
     {
         UpdateTimingsFor(vehicle);
 
@@ -81,18 +77,18 @@ public class VehicleManager
         }
     }
 
-    private void DestroyObject(MovingObject movingObject)
+    private void DestroyObject(ManagedVehicle vehicle)
     {
-        GameObject.DestroyImmediate(movingObject.gameObject);
-        movingVehicles.Remove(movingObject);
-        sequences.Remove(movingObject.config.id);
+        GameObject.DestroyImmediate(vehicle.gameObject);
+        vehicles.Remove(vehicle);
+        sequences.Remove(vehicle.config.id);
     }
 
-    public void UpdateManagedVehicles(Func<MovingObject, bool> vehicleShouldBeDestroyed)
+    public void UpdateManagedVehicles(Func<ManagedVehicle, bool> vehicleShouldBeDestroyed)
     {
-        foreach (var movingVehicle in movingVehicles)
+        for(var index = 0; index < vehicles.Count; index++)
         {
-            var vehicle = (MovingObject) movingVehicle;
+            var vehicle = (ManagedVehicle) vehicles[index];
             UpdateSegmentSpeedForVehicle(vehicle);
 
             if (vehicleShouldBeDestroyed(vehicle))
@@ -102,16 +98,16 @@ public class VehicleManager
         }
     }
 
-    public void InstantiateVehicles()
+    public void InstantiateVehicles(Func<Configurations.Vehicle, ManagedVehicle> vehicleInitialiser)
     {
         for (var i = 0; i < vehiclesConfigs.Length; i++)
         {
             var vehicleConfig = vehiclesConfigs[i];
             if (!sequences.ContainsKey(vehicleConfig.id))
             {
-                vehicleConfig.prefab = gameObjectCreator();
-                var vehicleMoving = vehicleFactory.LoadVehicleFromConfiguration(vehicleConfig);
-                movingVehicles.Add(vehicleMoving);
+                var vehicleManager = vehicleInitialiser(vehicleConfig);
+                vehicles.Add(vehicleManager);
+                UpdateTimingsFor(vehicleManager);
             }
         }
     }
@@ -129,5 +125,20 @@ public class VehicleManager
             this.index = index;
             this.frequency = frequency;
         }
+    }
+}
+
+public class ManagedVehicle
+{
+    public float nextSpawnTime;
+    public Configurations.Vehicle config;
+    public GameObject gameObject;
+    public int? index = null;
+
+    public ManagedVehicle(float nextSpawnTime, GameObject gameObject, Configurations.Vehicle vehicleConfig)
+    {
+        this.nextSpawnTime = nextSpawnTime;
+        this.gameObject = gameObject;
+        this.config = vehicleConfig;
     }
 }

@@ -3,29 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingObject
-{
-    public float nextSpawnTime;
-    public Configurations.Vehicle config;
-    public GameObject gameObject;
-    public int? index = null;
-
-    public MovingObject(float nextSpawnTime, GameObject gameObject, Configurations.Vehicle vehicleConfig)
-    {
-        this.nextSpawnTime = nextSpawnTime;
-        this.gameObject = gameObject;
-        this.config = vehicleConfig;
-    }
-}
-
 public class VehicleFactory
 {
-    private Grid<Tilemap.TilemapObject> localGrid;
-
-    public VehicleFactory(Grid<Tilemap.TilemapObject> grid)
-    {
-        this.localGrid = grid;
-    }
+    public VehicleFactory() { }
 
     public void applyRotation(Configurations.Vehicle configuration)
     {
@@ -49,34 +29,8 @@ public class VehicleFactory
         configuration.prefab.transform.rotation = quaternion;
     }
 
-    public MovingObject LoadVehicleFromConfiguration(Configurations.Vehicle configuration)
-    {
-        Vector2 startingPosition = Vector2.zero;
-        
-        switch (configuration.startingPosition.direction)
-        {
-            case Configurations.Vehicle.Direction.LeftToRight:
-                startingPosition = new Vector2(localGrid.GetLeftEnd(), localGrid.GetHeightAtPosition(configuration.startingPosition.value));
-                break;
-            case Configurations.Vehicle.Direction.RightToLeft:
-                startingPosition = new Vector2(localGrid.GetRightEnd(), localGrid.GetHeightAtPosition(configuration.startingPosition.value));
-                break;
-            case Configurations.Vehicle.Direction.TopToBottom:
-                startingPosition = new Vector2(localGrid.GetWidthAtPosition(configuration.startingPosition.value), localGrid.GetTopEnd());
-                break;
-            case Configurations.Vehicle.Direction.BottomToTop:
-                startingPosition = new Vector2(localGrid.GetWidthAtPosition(configuration.startingPosition.value), localGrid.GetBottomEnd());
-                break;
-        }
-
-        if(configuration.isPrefab)
-        {
-            configuration.prefab = (GameObject)GameObject.Instantiate(configuration.prefab, startingPosition, Quaternion.identity);
-            applyRotation(configuration);
-        }
-
-        configuration.prefab.transform.position = startingPosition;
-        
+    public ManagedVehicle LoadVehicleFromConfiguration(Configurations.Vehicle configuration)
+    {   
         InstantiatePrefabsForGameObject(configuration.id, configuration.prefab, configuration.childrenObjects);
 
         float frequency = 0;
@@ -85,7 +39,7 @@ public class VehicleFactory
             frequency += movement.duration;
         }
 
-        return new MovingObject(Time.time + frequency, configuration.prefab, configuration);
+        return new ManagedVehicle(Time.time + frequency, configuration.prefab, configuration);
     }
 
     private void InstantiatePrefabsForGameObject(String id, GameObject gameObject, GameObject[] childrenPrefabs)
