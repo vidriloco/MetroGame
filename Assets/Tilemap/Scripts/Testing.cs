@@ -10,15 +10,16 @@ public class Testing : MonoBehaviour {
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
     [SerializeField] private GameObject pivotObject;
+    [SerializeField] private GameObject backgroundObject;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
     private readonly ArrayList lanes = new ArrayList();
 
     private void Start() {
-        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 10, 5, pivotObject.transform.position, (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y));
+        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 10, 12, pivotObject.transform.position, (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y));
         var vehicleFactory = new VehicleFactory();
-        var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject);
+        var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject, backgroundObject);
 
         foreach (var laneConfig in lanesConfigurations)
         {
@@ -26,8 +27,9 @@ public class Testing : MonoBehaviour {
 
             lanes.Add(new Lane(tileMap, new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
             {
-                var complexPrefab = floatingTilemap.GetPivotWithVisualRepresentation(vehicle.prefab);
+                var complexPrefab = floatingTilemap.GetGameObjectFilledWithObjectsFromGroup(vehicle.childrenObjects);
                 vehicle.prefab = complexPrefab;
+                vehicle.childrenObjects = new GameObject[] { };
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }
@@ -37,7 +39,7 @@ public class Testing : MonoBehaviour {
 
     void FixedUpdate()
     {
-        foreach(var item in lanes.ToArray())
+        foreach(var item in lanes)
         {
             var lane = (Lane)item;
             lane.FixedUpdate();
@@ -52,9 +54,16 @@ public class Testing : MonoBehaviour {
         }
 
         if (Input.GetMouseButton(0)) {
+            Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
+
+            foreach (var item in lanes)
+            {
+                var lane = (Lane) item;
+                lane.DetectTapOnPosition(mouseWorldPosition);
+            }
+
             
-            Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-            foreach (var item in lanes.ToArray())
+            foreach (var item in lanes)
             {
                 var lane = (Lane)item;
                 lane.tilemap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);

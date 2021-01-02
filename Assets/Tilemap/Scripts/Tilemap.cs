@@ -12,7 +12,6 @@ public class Tilemap
 
     public Tilemap(int width, int height, float cellSize, Vector3 originPosition) {
         grid = new Grid<TilemapObject>(width, height, cellSize, originPosition, (Grid<TilemapObject> g, int x, int y) => new TilemapObject(g, x, y));
-        grid.DebugGrid();
     }
 
     public void SetTilemapSprite(Vector3 worldPosition, TilemapObject.TilemapSprite tilemapSprite) {
