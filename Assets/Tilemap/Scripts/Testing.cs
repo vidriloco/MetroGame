@@ -3,33 +3,78 @@ using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey.Utils;
 using CodeMonkey;
+using System;
+
+class ViewPort
+{
+    public static Vector2 defaultOrigin
+    {
+        get
+        {
+            return Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
+        }
+    }
+
+    public static Vector2 WithPadding(float x, float y)
+    {
+        return defaultOrigin + new Vector2(x, y);
+    }
+
+    public static Configurations.Grid GenerateGridParametersForCameraViewport(int dimension)
+    {
+        var camera = Camera.main;
+        var aspect = Camera.main.aspect;
+
+        var height = camera.orthographicSize * 2;
+        var width = camera.orthographicSize * aspect * 2;
+
+        return new Configurations.Grid((int) width / dimension, (int) height / dimension, dimension);
+    } 
+}
 
 public class Testing : MonoBehaviour {
+
+    private Vector2 defaultOrigin
+    {
+        get { return ViewPort.defaultOrigin; }
+    }
 
     [SerializeField] private TilemapVisual tilemapVisual;
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
-    [SerializeField] private GameObject pivotObject;
     [SerializeField] private GameObject backgroundObject;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
     private readonly ArrayList lanes = new ArrayList();
 
+    private Func<Grid<Tilemap.TilemapObject>, int, int, Tilemap.TilemapObject> gridDelegate
+    {
+        get { return (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y); }
+    }
+
     private void Start() {
-        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 10, 12, pivotObject.transform.position, (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y));
+
+        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(4, 8, 6, defaultOrigin, gridDelegate);
+        
         var vehicleFactory = new VehicleFactory();
-        var floatingTilemap = new FloatingTilemapVisual(grid, pivotObject, backgroundObject);
+        var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
 
         foreach (var laneConfig in lanesConfigurations)
         {
-            var tileMap = new Tilemap(laneConfig.width, laneConfig.height, laneConfig.cellSize, laneConfig.position);
+            var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(4);
 
-            lanes.Add(new Lane(tileMap, new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
+            Grid<Tilemap.TilemapObject> gameArea = new Grid<Tilemap.TilemapObject>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
+
+            lanes.Add(new Lane(new Tilemap(gameArea), new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
             {
-                var complexPrefab = floatingTilemap.GetGameObjectFilledWithObjectsFromGroup(vehicle.childrenObjects);
+                var complexPrefab = floatingTilemap.GetGameObjectFilledWithObjectsFromGroup(vehicle.childrenObjects, 6, 18);
                 vehicle.prefab = complexPrefab;
                 vehicle.childrenObjects = new GameObject[] { };
+
+                var renderer = complexPrefab.GetComponent<SpriteRenderer>();
+
+                complexPrefab.transform.position += new Vector3(4, -renderer.bounds.size.y);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }

@@ -6,22 +6,18 @@ public class FloatingTilemapVisual
 {
 
     private Grid<Tilemap.TilemapObject> grid;
-    private GameObject pivotObject;
     private GameObject backgroundObject;
 
-    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject pivotObject, GameObject backgroundObject)
+    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject backgroundObject)
     {
         this.grid = grid;
-        this.pivotObject = pivotObject;
+        this.grid.position = backgroundObject.transform.position;
         this.backgroundObject = backgroundObject;
     }
 
-    public GameObject GetGameObjectFilledWithObjectsFromGroup(GameObject[] prefabs)
+    public GameObject GetGameObjectFilledWithObjectsFromGroup(GameObject[] prefabs, float offsetX, float offsetY)
     {
-        var pivot = (GameObject)GameObject.Instantiate(pivotObject);
-
         var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
-        bgObject.transform.SetParent(pivot.transform);
 
         for (int x = 0; x < grid.GetWidth(); x++)
         {
@@ -31,18 +27,18 @@ public class FloatingTilemapVisual
 
                 Tilemap.TilemapObject gridObject = grid.GetGridObject(x, y);
                 Tilemap.TilemapObject.TilemapSprite tilemapSprite = gridObject.GetTilemapSprite();
-                Vector3 position = new Vector3(x, y) * grid.GetCellSize();
+                Vector3 position = grid.GetWorldPosition(x, y) + new Vector3(offsetX, offsetY);
                 var movingVehicle = (GameObject)GameObject.Instantiate(prefabs[index], position, Quaternion.Euler(0, 0, 0));
-                movingVehicle.transform.SetParent(pivot.transform);
+                movingVehicle.transform.SetParent(bgObject.transform);
             }
         }
 
-        return pivot;
+        return bgObject;
     }
 
     public GameObject GetGameObjectFilledWithObjects(GameObject prefab)
     {
-        var pivot = (GameObject)GameObject.Instantiate(pivotObject);
+        var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
         
         for (int x = 0; x < grid.GetWidth(); x++)
         {
@@ -54,11 +50,11 @@ public class FloatingTilemapVisual
                 Vector3 position = new Vector3(x, y) * grid.GetCellSize();
                 var movingVehicle = (GameObject)GameObject.Instantiate(prefab, position, Quaternion.Euler(0, 0, 0));
 
-                movingVehicle.transform.SetParent(pivot.transform);
+                movingVehicle.transform.SetParent(bgObject.transform);
             }
         }
 
-        return pivot;
+        return bgObject;
     }
 
 }

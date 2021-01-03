@@ -59,7 +59,9 @@ public class Lane
                 startingPosition = new Vector2(tilemap.grid.GetWidthAtPosition(vehicle.startingPosition.value), tilemap.grid.GetTopEnd());
                 break;
             case Configurations.Vehicle.Direction.BottomToTop:
-                startingPosition = new Vector2(tilemap.grid.GetWidthAtPosition(vehicle.startingPosition.value), tilemap.grid.GetBottomEnd());
+                Debug.Log("BOTTOM END: " + tilemap.grid.GetBottomEnd());
+                var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
+                startingPosition = new Vector2(tilemap.grid.GetWidthAtPosition(vehicle.startingPosition.value), tilemap.grid.GetBottomEnd()-200);
                 break;
         }
 

@@ -106,6 +106,11 @@ public class Grid<TGridObject> {
         return cellSize;
     }
 
+    public Vector3 GetLocalPosition(Vector3 localPosition, int x, int y)
+    {
+        return localPosition + new Vector3(x, y) * cellSize;
+    }
+
     public Vector3 GetWorldPosition(int x, int y) {
         return position + new Vector3(x, y) * cellSize;
     }

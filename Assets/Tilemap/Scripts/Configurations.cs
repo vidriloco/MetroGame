@@ -6,11 +6,24 @@ public class Configurations
 {
 
     [System.Serializable]
-    public struct Lane
+    public struct Grid
     {
         public int width;
         public int height;
         public float cellSize;
+
+        public Grid(int width, int height, float cellSize)
+        {
+            this.width = width;
+            this.height = height;
+            this.cellSize = cellSize;
+        }
+    }
+
+    [System.Serializable]
+    public struct Lane
+    {
+        public Grid grid;
         public Vector3 position;
         [SerializeField] public Vehicle[] vehicles;
     }
