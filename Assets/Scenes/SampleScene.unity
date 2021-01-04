@@ -370,23 +370,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemapVisual: {fileID: 118979809}
-  pivotObject: {fileID: 5369041215393345500, guid: 934a1676ba4834d92b2924d8e7c17a28, type: 3}
-  prefab: {fileID: 2733794265319617441, guid: f2539567ce73c465e9938fc7aa6b115b, type: 3}
   lanesConfigurations:
-  - width: 8
-    height: 16
-    cellSize: 4
+  - grid:
+      width: 0
+      height: 0
+      cellSize: 0
     position: {x: 0, y: 0, z: 0}
     vehicles:
     - id: A
-      isPrefab: 0
       prefab: {fileID: 3697950820662553786, guid: 9599ab086cbfe491ab5edd3bcfda04b5, type: 3}
       startingPosition:
         direction: 3
-        value: 5
-      speed: 30
-      frequency: 10
-      childrenObjects: []
+        value: 2
+      movements:
+      - speed: 20
+        duration: 5
+      - speed: 0
+        duration: 0
+      - speed: 10
+        duration: 10
+      childrenObjects:
+      - {fileID: 2733794265319617441, guid: f2539567ce73c465e9938fc7aa6b115b, type: 3}
+      - {fileID: 4819453505331063705, guid: cb5618a47cf944ffe8c135c777b1d71e, type: 3}
+      - {fileID: 7096913476201178023, guid: c474b2a3055704bdf8491acff2ac2409, type: 3}
+  backgroundObject: {fileID: 3697950820662553786, guid: 9599ab086cbfe491ab5edd3bcfda04b5, type: 3}
 --- !u!4 &1373312278
 Transform:
   m_ObjectHideFlags: 0

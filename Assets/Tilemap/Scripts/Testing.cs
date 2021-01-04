@@ -65,7 +65,7 @@ public class Testing : MonoBehaviour {
             var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(4);
 
             Grid<Tilemap.TilemapObject> gameArea = new Grid<Tilemap.TilemapObject>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
-
+            gameArea.DebugGrid();
             lanes.Add(new Lane(new Tilemap(gameArea), new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
             {
                 var complexPrefab = floatingTilemap.GetGameObjectFilledWithObjectsFromGroup(vehicle.childrenObjects, 6, 18);
@@ -74,7 +74,7 @@ public class Testing : MonoBehaviour {
 
                 var renderer = complexPrefab.GetComponent<SpriteRenderer>();
 
-                complexPrefab.transform.position += new Vector3(4, -renderer.bounds.size.y);
+                complexPrefab.transform.position += new Vector3(0, -renderer.bounds.size.y);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }
