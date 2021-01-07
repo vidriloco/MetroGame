@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7161119951682097144
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2902143957797352699}
+  - component: {fileID: 7851718846793931526}
+  m_Layer: 0
+  m_Name: PassengerAnimator
+  m_TagString: PA
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2902143957797352699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7161119951682097144}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.571551, y: -12.860548, z: -9.156208}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7851718846793931526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7161119951682097144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42ec14bc8af1544e1afca694b1d79f34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  passengerGameObjectRef: {fileID: 4731297322953896829, guid: 407c32c6f324f46dab8fb46e82f0613e, type: 3}
+  stationGameObjectRef: {fileID: 4731297322953896829, guid: 407c32c6f324f46dab8fb46e82f0613e, type: 3}
+  passengerSprites:
+  - {fileID: 21300000, guid: 952fb99834dfa45ea89005b55402425e, type: 3}
+  - {fileID: 21300000, guid: 1f963c1ea3ca4440ca64e23063786c7a, type: 3}
+  - {fileID: 21300000, guid: 515a355947b0c4d7490ea21eaa3b0179, type: 3}
+  stationSprites:
+  - {fileID: 21300000, guid: 5a75ef6e9d16c433ea56bbb651e5e705, type: 3}

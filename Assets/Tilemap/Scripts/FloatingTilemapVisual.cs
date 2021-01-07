@@ -15,6 +15,37 @@ public class FloatingTilemapVisual
         this.backgroundObject = backgroundObject;
     }
 
+    public GameObject GetGameObjectFilledWithAnimatableObjectsFromGroup(PassengerAnimator[] animatables, float offsetX, float offsetY)
+    {
+        var passengerAnimators = GameObject.FindGameObjectsWithTag("PA");
+
+        for(var idx = 0; idx < passengerAnimators.Length; idx++)
+        {
+            Debug.Log("Destroying ");
+            GameObject.DestroyImmediate(passengerAnimators[idx]);
+        }
+
+        var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
+
+        for (int x = 0; x < grid.GetWidth(); x++)
+        {
+            for (int y = 0; y < grid.GetHeight(); y++)
+            {
+                var index = Random.Range(0, animatables.Length);
+
+                Tilemap.TilemapObject gridObject = grid.GetGridObject(x, y);
+                Tilemap.TilemapObject.TilemapSprite tilemapSprite = gridObject.GetTilemapSprite();
+                Vector3 position = grid.GetWorldPosition(x, y) + new Vector3(offsetX, offsetY);
+
+                var passenger = (PassengerAnimator)GameObject.Instantiate(animatables[index], position, Quaternion.Euler(0, 0, 0));
+                passenger.SetParentAndPosition(bgObject.transform, position);
+
+            }
+        }
+
+        return bgObject;
+    }
+
     public GameObject GetGameObjectFilledWithObjectsFromGroup(GameObject[] prefabs, float offsetX, float offsetY)
     {
         var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);

@@ -68,7 +68,7 @@ public class Testing : MonoBehaviour {
 
             lanes.Add(new Lane(new Tilemap(gameArea), new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
             {
-                var complexPrefab = floatingTilemap.GetGameObjectFilledWithObjectsFromGroup(vehicle.childrenObjects, 6, 18);
+                var complexPrefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, 6, 18);
                 vehicle.prefab = complexPrefab;
                 vehicle.childrenObjects = new GameObject[] { };
 

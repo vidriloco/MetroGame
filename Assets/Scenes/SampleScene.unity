@@ -393,6 +393,8 @@ MonoBehaviour:
       - {fileID: 2733794265319617441, guid: f2539567ce73c465e9938fc7aa6b115b, type: 3}
       - {fileID: 4819453505331063705, guid: cb5618a47cf944ffe8c135c777b1d71e, type: 3}
       - {fileID: 7096913476201178023, guid: c474b2a3055704bdf8491acff2ac2409, type: 3}
+      animatableObjects:
+      - {fileID: 7851718846793931526, guid: d2d505f8aba91495fa1ce2a8cab1d2d3, type: 3}
   backgroundObject: {fileID: 3697950820662553786, guid: 9599ab086cbfe491ab5edd3bcfda04b5, type: 3}
 --- !u!4 &1373312278
 Transform:
