@@ -33,7 +33,7 @@ public class Lane
         vehicleManager.InstantiateVehicles((Configurations.Vehicle vehicle) =>
         {
             var managedVehicle = vehicleInitialiser(vehicle);
-            SetInitialPositionForConfigurationVehicle(vehicle);
+            //SetInitialPositionForConfigurationVehicle(vehicle);
             return managedVehicle;
         });
     }
