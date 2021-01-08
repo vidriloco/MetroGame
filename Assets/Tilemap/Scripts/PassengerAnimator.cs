@@ -19,68 +19,43 @@ public class PassengerAnimator : MonoBehaviour
 
     private bool shouldShowStation = false;
 
-    private float framerate;
-
-    private float measuredTime;
-    private float nextTime
-    {
-        get { return framerate + measuredTime; }
-    }
-
-    private Sprite currentStationSprite = null;
-
     public void Awake()
     {
         passengerSpriteIdx = Random.Range(0, passengerSprites.Length);
         stationSpriteIdx = Random.Range(0, stationSprites.Length);
-        framerate = Random.Range(5,10);
-        measuredTime = Time.time;
         shouldShowStation = Random.Range(0, 3) == 1;
+
+        passengerGameObjectI = Instantiate(passengerGameObjectRef, Vector3.zero, Quaternion.identity);
+        passengerGameObjectI.GetComponent<SpriteRenderer>().sprite = passengerSprites[passengerSpriteIdx];
+
+        if (shouldShowStation)
+        {
+            stationGameObjectI = Instantiate(stationGameObjectRef, Vector3.zero, Quaternion.identity);
+            stationGameObjectI.GetComponent<SpriteRenderer>().sprite = stationSprites[stationSpriteIdx];
+            stationGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
+
+            LeanTween.delayedCall(stationGameObjectI, Random.Range(0,5), () =>
+            {
+                LeanTween.alpha(stationGameObjectI, 0f, 2f).setLoopPingPong();
+                LeanTween.scale(stationGameObjectI, new Vector3(1.5f, 1.5f, 1.5f), 4f).setLoopPingPong();
+            }).setOnCompleteOnRepeat(true);
+        }
     }
 
     public void SetParentAndPosition(Transform transform, Vector3 position)
     {
-        passengerGameObjectI = Instantiate(passengerGameObjectRef, position, Quaternion.identity);
-        passengerGameObjectI.transform.parent = transform;
-
-        if(shouldShowStation)
+        if(passengerGameObjectI != null)
         {
-            var stationPosition = position + new Vector3(0, 3);
-            stationGameObjectI = Instantiate(stationGameObjectRef, stationPosition, Quaternion.identity);
+            passengerGameObjectI.transform.parent = transform;
+            passengerGameObjectI.transform.position = position;
+        }
+
+        if(stationGameObjectI != null)
+        {
             stationGameObjectI.transform.parent = transform;
-            stationGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 1;
-        }
-
-    }
-
-    private void Update()
-    {
-
-        if (Time.time <= nextTime)
-        {
-            if(currentStationSprite == null)
-            {
-                currentStationSprite = stationSprites[stationSpriteIdx];
-            } else
-            {
-                currentStationSprite = null;
-            }
-        } else
-        {
-            measuredTime = Time.time;
-        }
-
-        //Debug.Log("On: " + Time.time + " Next time: " + nextTime);
-
-
-        if (stationGameObjectI != null)
-        {
-            stationGameObjectI.GetComponent<SpriteRenderer>().sprite = currentStationSprite;
-        }
-
-        if (passengerGameObjectI != null)
-        {
-            passengerGameObjectI.GetComponent<SpriteRenderer>().sprite = passengerSprites[passengerSpriteIdx];
+            stationGameObjectI.transform.position = position;
         }
     }
+
 }
