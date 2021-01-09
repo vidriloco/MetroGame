@@ -39,6 +39,12 @@ public class TilemapVisual : MonoBehaviour {
         GetComponent<MeshFilter>().mesh = mesh;
         
         Texture texture = GetComponent<MeshRenderer>().material.mainTexture;
+
+        if(texture == null)
+        {
+            return;
+        }
+
         float textureWidth = texture.width;
         float textureHeight = texture.height;
 

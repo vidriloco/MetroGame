@@ -74,7 +74,7 @@ public class Testing : MonoBehaviour {
 
                 var renderer = complexPrefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
-                complexPrefab.transform.position += new Vector3(-6, -renderer.bounds.size.y);
+                complexPrefab.transform.position += new Vector3(-25, -renderer.bounds.size.y);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }
