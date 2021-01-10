@@ -1621,12 +1621,18 @@ MonoBehaviour:
         direction: 3
         value: 1
       movements:
-      - speed: 20
+      - speed: 60
         duration: 0
+      - speed: 40
+        duration: 1
       - speed: 20
-        duration: 5
-      - speed: 10
-        duration: 10
+        duration: 1
+      - speed: 0
+        duration: 3
+      - speed: 20
+        duration: 1
+      - speed: 50
+        duration: 1
       childrenObjects: []
       animatableObjects:
       - {fileID: 7851718846793931526, guid: d2d505f8aba91495fa1ce2a8cab1d2d3, type: 3}

@@ -82,7 +82,7 @@ public class Testing : MonoBehaviour {
                 vehicle.childrenObjects = new GameObject[] { };
                 var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
-                vehicle.prefab.transform.position = new Vector3(position.x, -renderer.bounds.size.y);
+                vehicle.prefab.transform.position = new Vector3(position.x, -200);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }
