@@ -18,16 +18,6 @@ public class Lane
         this.vehicleInitialiser = vehicleInitialiser;
     }
 
-    public void DetectTapOnPosition(Vector2 position)
-    {
-        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.zero);
-
-        if(hit.collider != null)
-        {
-            Debug.Log(hit.collider.gameObject.GetComponentInParent<SpriteRenderer>().sprite.name);
-        }
-    }
-
     public void Update()
     {
         vehicleManager.InstantiateVehicles((Configurations.Vehicle vehicle) =>

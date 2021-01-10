@@ -56,13 +56,13 @@ public class Testing : MonoBehaviour {
     private void Start() {
 
         // Hora valle
-        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
 
         // Hora pico
         //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
 
         // Hora super pico
-        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
+        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
         
         var vehicleFactory = new VehicleFactory();
         var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
@@ -96,6 +96,8 @@ public class Testing : MonoBehaviour {
                         GameObject[] deadStations = GameObject.FindGameObjectsWithTag("dead-station");
                         foreach (var station in deadStations)
                         {
+                            var passengerInfo = station.transform.parent.gameObject;
+                            passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
                             LeanTween.DestroyImmediate(station);
                         }
                     }
@@ -140,14 +142,24 @@ public class Testing : MonoBehaviour {
 
         if (Input.GetMouseButton(0)) {
             Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
+            RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 
-            foreach (var item in lanes)
+            var sprite = hit.collider.gameObject;
+            if(sprite.tag == "dead-station")
             {
-                var lane = (Lane) item;
-                lane.DetectTapOnPosition(mouseWorldPosition);
+                if(sprite.transform.parent.gameObject.tag == "passenger")
+                {
+                    sprite = sprite.transform.parent.gameObject;
+                }
+
+                LeanTween.delayedCall(gameObject, 0.5f, () =>
+                {
+                    LeanTween.scale(sprite, new Vector3(10f, 10f, 10f), 1).setEase(LeanTweenType.easeInOutQuad);
+                    LeanTween.alpha(sprite, 0f, 1).setDestroyOnComplete(true);
+                    LeanTween.alpha(sprite.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
+                });
             }
 
-            
             foreach (var item in lanes)
             {
                 var lane = (Lane)item;

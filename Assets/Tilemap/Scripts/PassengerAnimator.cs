@@ -47,12 +47,12 @@ public class PassengerAnimator : MonoBehaviour
         {
             passengerGameObjectI.transform.parent = transform;
             passengerGameObjectI.transform.position = position;
-        }
 
-        if(stationGameObjectI != null)
-        {
-            stationGameObjectI.transform.parent = transform;
-            stationGameObjectI.transform.position = position + new Vector3(0, 2, 0);
+            if (stationGameObjectI != null)
+            {
+                stationGameObjectI.transform.parent = passengerGameObjectI.transform;
+                stationGameObjectI.transform.position = position + new Vector3(0, 2, 0);
+            }
         }
     }
 }
