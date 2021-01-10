@@ -15,7 +15,7 @@ public class FloatingTilemapVisual
         this.backgroundObject = backgroundObject;
     }
 
-    public GameObject GetGameObjectFilledWithAnimatableObjectsFromGroup(PassengerAnimator[] animatables, float offsetX, float offsetY)
+    public GameObject GetGameObjectFilledWithAnimatableObjectsFromGroup(PassengerAnimator[] animatables, float offsetX)
     {
         var passengerAnimators = GameObject.FindGameObjectsWithTag("PA");
 
@@ -27,21 +27,33 @@ public class FloatingTilemapVisual
 
         var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
 
+        var gameObject = new GameObject();
+
         for (int x = 0; x < grid.GetWidth(); x++)
         {
             for (int y = 0; y < grid.GetHeight(); y++)
             {
                 var index = Random.Range(0, animatables.Length);
-
-                Tilemap.TilemapObject gridObject = grid.GetGridObject(x, y);
-                Tilemap.TilemapObject.TilemapSprite tilemapSprite = gridObject.GetTilemapSprite();
-                Vector3 position = grid.GetWorldPosition(x, y) + new Vector3(offsetX, offsetY);
-
+                Vector3 position = grid.GetWorldPosition(x, y);
                 var passenger = (PassengerAnimator)GameObject.Instantiate(animatables[index], position, Quaternion.Euler(0, 0, 0));
-                passenger.SetParentAndPosition(bgObject.transform, position);
-
+                passenger.SetParentAndPosition(gameObject.transform, position);
             }
         }
+
+        var renderer = bgObject.GetComponent<SpriteRenderer>();
+
+        var bgObjectWidth = renderer.bounds.size.x / 2;
+        var bgObjectHeight = renderer.bounds.size.y / 2;
+
+        gameObject.transform.parent = bgObject.transform;
+
+        // Calculate the width of the built animatables set of sprites
+        var bottomLeftPoint = Camera.main.WorldToScreenPoint(gameObject.transform.TransformPoint(0, 0, 0)).x;
+        var topRightPoint = Camera.main.WorldToScreenPoint(gameObject.transform.TransformPoint(1, 1, 0)).x;
+        var width = topRightPoint - bottomLeftPoint;
+
+        // Center the whole thing within the background object
+        gameObject.transform.position = new Vector3(bgObjectWidth - width/2 - offsetX, bgObjectHeight - grid.GetWorldHeight()/2);
 
         return bgObject;
     }

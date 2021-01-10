@@ -55,26 +55,34 @@ public class Testing : MonoBehaviour {
 
     private void Start() {
 
-        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+        // Hora valle
+        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+
+        // Hora pico
+        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
+
+        // Hora super pico
+         Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
         
         var vehicleFactory = new VehicleFactory();
         var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
 
         foreach (var laneConfig in lanesConfigurations)
         {
-            var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(4);
+            var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(3);
 
             Grid<Tilemap.TilemapObject> gameArea = new Grid<Tilemap.TilemapObject>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
 
-            lanes.Add(new Lane(new Tilemap(gameArea), new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle) =>
+            lanes.Add(new Lane(new Tilemap(gameArea), new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle, Lane lane) =>
             {
-                var complexPrefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, 6, 18);
-                vehicle.prefab = complexPrefab;
-                vehicle.childrenObjects = new GameObject[] { };
+                var position = lane.PositionForConfigurationVehicle(vehicle);
+                var offsetX = lane.WorldDistanceFromOriginToPositionXAxis(vehicle.startingPosition.value);
 
-                var renderer = complexPrefab.GetComponent<SpriteRenderer>();
+                vehicle.prefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, offsetX);
+                vehicle.childrenObjects = new GameObject[] { };
+                var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
-                complexPrefab.transform.position += new Vector3(-25, -renderer.bounds.size.y);
+                vehicle.prefab.transform.position = new Vector3(position.x, -renderer.bounds.size.y);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }

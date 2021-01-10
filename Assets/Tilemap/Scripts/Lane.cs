@@ -9,9 +9,9 @@ public class Lane
     public Tilemap tilemap;
     private VehicleManager vehicleManager;
     private VehicleFactory vehicleFactory;
-    private Func<Configurations.Vehicle, ManagedVehicle> vehicleInitialiser;
+    private Func<Configurations.Vehicle, Lane, ManagedVehicle> vehicleInitialiser;
 
-    public Lane(Tilemap tilemap, VehicleManager vehicleManager, Func<Configurations.Vehicle, ManagedVehicle> vehicleInitialiser)
+    public Lane(Tilemap tilemap, VehicleManager vehicleManager, Func<Configurations.Vehicle, Lane, ManagedVehicle> vehicleInitialiser)
     {
         this.tilemap = tilemap;
         this.vehicleManager = vehicleManager;
@@ -32,9 +32,7 @@ public class Lane
     {
         vehicleManager.InstantiateVehicles((Configurations.Vehicle vehicle) =>
         {
-            var managedVehicle = vehicleInitialiser(vehicle);
-            //SetInitialPositionForConfigurationVehicle(vehicle);
-            return managedVehicle;
+            return vehicleInitialiser(vehicle, this);
         });
     }
 
@@ -43,7 +41,12 @@ public class Lane
         vehicleManager.UpdateManagedVehicles(ShouldRemoveMovingObject);
     }
 
-    private void SetInitialPositionForConfigurationVehicle(Configurations.Vehicle vehicle)
+    public float WorldDistanceFromOriginToPositionXAxis(int position)
+    {
+        return tilemap.grid.GetWidthAtPosition(position) - tilemap.grid.GetWidthAtPosition(0);
+    }
+
+    public Vector2 PositionForConfigurationVehicle(Configurations.Vehicle vehicle)
     {
         Vector2 startingPosition = Vector2.zero;
 
@@ -63,7 +66,7 @@ public class Lane
                 break;
         }
 
-        vehicle.prefab.transform.position = startingPosition;
+        return startingPosition;
     }
 
     private bool ShouldRemoveMovingObject(ManagedVehicle vehicle)
