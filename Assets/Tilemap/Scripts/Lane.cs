@@ -24,7 +24,7 @@ public class Lane
 
         if(hit.collider != null)
         {
-            Debug.Log(hit.collider.gameObject.name);
+            Debug.Log(hit.collider.gameObject.GetComponentInParent<SpriteRenderer>().sprite.name);
         }
     }
 

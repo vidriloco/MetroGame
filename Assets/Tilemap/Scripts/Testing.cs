@@ -56,13 +56,13 @@ public class Testing : MonoBehaviour {
     private void Start() {
 
         // Hora valle
-        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
 
         // Hora pico
         //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
 
         // Hora super pico
-         Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
+        // Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
         
         var vehicleFactory = new VehicleFactory();
         var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);

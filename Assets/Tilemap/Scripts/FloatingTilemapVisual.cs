@@ -21,7 +21,6 @@ public class FloatingTilemapVisual
 
         for(var idx = 0; idx < passengerAnimators.Length; idx++)
         {
-            Debug.Log("Destroying ");
             GameObject.DestroyImmediate(passengerAnimators[idx]);
         }
 
