@@ -56,24 +56,56 @@ public class Testing : MonoBehaviour {
     private void Start() {
 
         // Hora valle
-        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
 
         // Hora pico
         //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
 
         // Hora super pico
-        // Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
+        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
         
         var vehicleFactory = new VehicleFactory();
         var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
-
+        
         foreach (var laneConfig in lanesConfigurations)
         {
             var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(3);
 
             Grid<Tilemap.TilemapObject> gameArea = new Grid<Tilemap.TilemapObject>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
 
-            lanes.Add(new Lane(new Tilemap(gameArea), new VehicleManager(laneConfig.vehicles), (Configurations.Vehicle vehicle, Lane lane) =>
+            var vehicleManager = new VehicleManager(laneConfig.vehicles)
+            {
+                VehicleWillChangeHandler = (float speed, float duration) =>
+                {
+
+                    if (speed == 0)
+                    {
+                        GameObject[] stations = GameObject.FindGameObjectsWithTag("station");
+                        foreach (var station in stations)
+                        {
+                            station.tag = "dead-station";
+                            LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
+                            {
+                                LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
+                                LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
+                            }).setOnCompleteOnRepeat(true);
+
+                        }
+                    } else
+                    {
+                        GameObject[] deadStations = GameObject.FindGameObjectsWithTag("dead-station");
+                        foreach (var station in deadStations)
+                        {
+                            LeanTween.DestroyImmediate(station);
+                        }
+                    }
+
+                    return false;
+                }
+            };
+
+
+            lanes.Add(new Lane(new Tilemap(gameArea), vehicleManager, (Configurations.Vehicle vehicle, Lane lane) =>
             {
                 var position = lane.PositionForConfigurationVehicle(vehicle);
                 var offsetX = lane.WorldDistanceFromOriginToPositionXAxis(vehicle.startingPosition.value);
@@ -82,7 +114,7 @@ public class Testing : MonoBehaviour {
                 vehicle.childrenObjects = new GameObject[] { };
                 var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
-                vehicle.prefab.transform.position = new Vector3(position.x, -200);
+                vehicle.prefab.transform.position = new Vector3(position.x, -180);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             }));
         }

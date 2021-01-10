@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - PA
+  - station
+  - passenger
+  - dead-station
   layers:
   - Default
   - TransparentFX

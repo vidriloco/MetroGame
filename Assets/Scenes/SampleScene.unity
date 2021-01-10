@@ -1624,12 +1624,14 @@ MonoBehaviour:
       - speed: 60
         duration: 0
       - speed: 40
-        duration: 1
-      - speed: 20
+        duration: 0.8
+      - speed: 17
         duration: 1
       - speed: 0
         duration: 3
-      - speed: 20
+      - speed: 0
+        duration: 10
+      - speed: 17
         duration: 1
       - speed: 50
         duration: 1

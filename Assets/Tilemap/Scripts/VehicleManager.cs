@@ -11,6 +11,8 @@ public class VehicleManager
     private ArrayList vehicles = new ArrayList();
     private Configurations.Vehicle[] vehiclesConfigs;
 
+    public Func<float, float, bool> VehicleWillChangeHandler;
+
     public VehicleManager(Configurations.Vehicle[] vehiclesConfigs)
     {
         this.vehiclesConfigs = vehiclesConfigs;
@@ -73,6 +75,7 @@ public class VehicleManager
             {
                 var vectorDirection = CalculateVectorDirectionFor(vehicle.config.startingPosition.direction);
                 vehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * movement.GetValueOrDefault().speed;
+                _ = VehicleWillChangeHandler(movement.GetValueOrDefault().speed, movement.GetValueOrDefault().duration);
             }
         }
     }

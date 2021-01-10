@@ -27,19 +27,17 @@ public class PassengerAnimator : MonoBehaviour
 
         passengerGameObjectI = Instantiate(passengerGameObjectRef, Vector3.zero, Quaternion.identity);
         passengerGameObjectI.GetComponent<SpriteRenderer>().sprite = passengerSprites[passengerSpriteIdx];
+        passengerGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
+        passengerGameObjectI.tag = "passenger";
 
         if (shouldShowStation)
         {
             stationGameObjectI = Instantiate(stationGameObjectRef, Vector3.zero, Quaternion.identity);
+
             stationGameObjectI.GetComponent<SpriteRenderer>().sprite = stationSprites[stationSpriteIdx];
-            stationGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 1;
-
-
-            LeanTween.delayedCall(stationGameObjectI, Random.Range(0,5), () =>
-            {
-                LeanTween.alpha(stationGameObjectI, 0f, 2f).setLoopPingPong();
-                LeanTween.scale(stationGameObjectI, new Vector3(1.5f, 1.5f, 1.5f), 4f).setLoopPingPong();
-            }).setOnCompleteOnRepeat(true);
+            stationGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 2;
+            stationGameObjectI.tag = "station";
         }
     }
 
@@ -54,8 +52,7 @@ public class PassengerAnimator : MonoBehaviour
         if(stationGameObjectI != null)
         {
             stationGameObjectI.transform.parent = transform;
-            stationGameObjectI.transform.position = position;
+            stationGameObjectI.transform.position = position + new Vector3(0, 2, 0);
         }
     }
-
 }
