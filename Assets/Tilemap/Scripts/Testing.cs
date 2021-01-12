@@ -86,6 +86,7 @@ public class Testing : MonoBehaviour {
                             station.tag = "dead-station";
                             LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
                             {
+
                                 LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
                                 LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
                             }).setOnCompleteOnRepeat(true);
@@ -140,7 +141,7 @@ public class Testing : MonoBehaviour {
             lane.Update();
         }
 
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButtonUp(0)) {
             Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
             RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 
@@ -154,6 +155,7 @@ public class Testing : MonoBehaviour {
 
                 LeanTween.delayedCall(gameObject, 0.5f, () =>
                 {
+                    GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
                     LeanTween.scale(sprite, new Vector3(10f, 10f, 10f), 1).setEase(LeanTweenType.easeInOutQuad);
                     LeanTween.alpha(sprite, 0f, 1).setDestroyOnComplete(true);
                     LeanTween.alpha(sprite.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
