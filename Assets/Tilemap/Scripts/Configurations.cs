@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,6 +51,11 @@ public class Configurations
         {
             public float speed;
             public float duration;
+
+            internal object GetValueOrDefault()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [System.Serializable]

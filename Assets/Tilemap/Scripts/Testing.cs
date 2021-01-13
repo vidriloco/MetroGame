@@ -77,9 +77,22 @@ public class Testing : MonoBehaviour {
             {
                 VehicleWillChangeHandler = (float speed, float duration) =>
                 {
-
                     if (speed == 0)
                     {
+                        
+                        if(duration == 6)
+                        {
+                            GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
+                            GameObject[] deadStations = GameObject.FindGameObjectsWithTag("dead-station");
+                            foreach (var station in deadStations)
+                            {
+                                var passengerInfo = station.transform.parent.gameObject;
+                                passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
+                                LeanTween.DestroyImmediate(station);
+                            }
+                        }
+
+
                         GameObject[] stations = GameObject.FindGameObjectsWithTag("station");
                         foreach (var station in stations)
                         {
@@ -94,12 +107,9 @@ public class Testing : MonoBehaviour {
                         }
                     } else
                     {
-                        GameObject[] deadStations = GameObject.FindGameObjectsWithTag("dead-station");
-                        foreach (var station in deadStations)
+                        if(speed == 1 && duration == 1)
                         {
-                            var passengerInfo = station.transform.parent.gameObject;
-                            passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
-                            LeanTween.DestroyImmediate(station);
+                            GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundDeparting();
                         }
                     }
 
@@ -110,6 +120,8 @@ public class Testing : MonoBehaviour {
 
             lanes.Add(new Lane(new Tilemap(gameArea), vehicleManager, (Configurations.Vehicle vehicle, Lane lane) =>
             {
+                GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundArriving();
+
                 var position = lane.PositionForConfigurationVehicle(vehicle);
                 var offsetX = lane.WorldDistanceFromOriginToPositionXAxis(vehicle.startingPosition.value);
 

@@ -59,6 +59,8 @@ public class VehicleManager
                 sequences[vehicle.config.id].lastTime = Time.time;
                 sequences[vehicle.config.id].movement = movement;
                 sequences[vehicle.config.id].index = timing.index + 1;
+                _ = VehicleWillChangeHandler(movement.speed, movement.duration);
+
             }
         }
     }
@@ -75,7 +77,6 @@ public class VehicleManager
             {
                 var vectorDirection = CalculateVectorDirectionFor(vehicle.config.startingPosition.direction);
                 vehicle.gameObject.GetComponent<Rigidbody>().velocity = vectorDirection * movement.GetValueOrDefault().speed;
-                _ = VehicleWillChangeHandler(movement.GetValueOrDefault().speed, movement.GetValueOrDefault().duration);
             }
         }
     }
