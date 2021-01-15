@@ -117,19 +117,26 @@ public class Testing : MonoBehaviour {
 
                 Grid<Tilemap.TilemapObject> grid;
 
-                int rangeIndex = UnityEngine.Random.Range(0, 3);
+                int rangeIndex = UnityEngine.Random.Range(0, 4);
 
                 switch (rangeIndex) {
                     case 0:
-                        grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+                        grid = new Grid<Tilemap.TilemapObject>(3, 4, 9, defaultOrigin, gridDelegate);
                         break;
                     case 1:
-                        grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
+                        grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+                        break;
+                    case 2:
+                        grid = new Grid<Tilemap.TilemapObject>(4, 7, 7, defaultOrigin, gridDelegate);
+                        break;
+                    case 3:
+                        grid = new Grid<Tilemap.TilemapObject>(4, 3, 10, defaultOrigin, gridDelegate);
                         break;
                     default:
-                        grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
+                        grid = new Grid<Tilemap.TilemapObject>(4, 9, 7, defaultOrigin, gridDelegate);
                         break;
                 }
+
 
                 var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
 
