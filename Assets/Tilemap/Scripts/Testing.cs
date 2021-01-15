@@ -55,18 +55,8 @@ public class Testing : MonoBehaviour {
 
     private void Start() {
 
-        // Hora valle
-        Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
-
-        // Hora pico
-        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
-
-        // Hora super pico
-        //Grid<Tilemap.TilemapObject> grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
-        
         var vehicleFactory = new VehicleFactory();
-        var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
-        
+
         foreach (var laneConfig in lanesConfigurations)
         {
             var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(3);
@@ -125,7 +115,25 @@ public class Testing : MonoBehaviour {
                 var position = lane.PositionForConfigurationVehicle(vehicle);
                 var offsetX = lane.WorldDistanceFromOriginToPositionXAxis(vehicle.startingPosition.value);
 
-                vehicle.prefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, offsetX);
+                Grid<Tilemap.TilemapObject> grid;
+
+                int rangeIndex = UnityEngine.Random.Range(0, 3);
+
+                switch (rangeIndex) {
+                    case 0:
+                        grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
+                        break;
+                    case 1:
+                        grid = new Grid<Tilemap.TilemapObject>(5, 11, 5, defaultOrigin, gridDelegate);
+                        break;
+                    default:
+                        grid = new Grid<Tilemap.TilemapObject>(6, 13, 4, defaultOrigin, gridDelegate);
+                        break;
+                }
+
+                var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
+
+                vehicle.prefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, 0);
                 vehicle.childrenObjects = new GameObject[] { };
                 var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
@@ -165,13 +173,10 @@ public class Testing : MonoBehaviour {
                     sprite = sprite.transform.parent.gameObject;
                 }
 
-                LeanTween.delayedCall(gameObject, 0.5f, () =>
-                {
-                    GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
-                    LeanTween.scale(sprite, new Vector3(10f, 10f, 10f), 1).setEase(LeanTweenType.easeInOutQuad);
-                    LeanTween.alpha(sprite, 0f, 1).setDestroyOnComplete(true);
-                    LeanTween.alpha(sprite.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
-                });
+                GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
+                LeanTween.scale(sprite, new Vector3(10f, 10f, 10f), 1).setEase(LeanTweenType.easeInOutQuad);
+                LeanTween.alpha(sprite, 0f, 1).setDestroyOnComplete(true);
+                LeanTween.alpha(sprite.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
             }
 
             foreach (var item in lanes)
