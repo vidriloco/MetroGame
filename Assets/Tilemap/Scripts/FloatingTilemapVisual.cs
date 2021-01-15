@@ -6,13 +6,15 @@ public class FloatingTilemapVisual
 {
 
     private Grid<Tilemap.TilemapObject> grid;
-    private GameObject backgroundObject;
+    private GameObject locomotiveSprite;
+    private GameObject carSprite;
 
-    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject backgroundObject)
+    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject locomotiveSprite, GameObject carSprite)
     {
         this.grid = grid;
-        this.grid.position = backgroundObject.transform.position;
-        this.backgroundObject = backgroundObject;
+        this.grid.position = locomotiveSprite.transform.position;
+        this.locomotiveSprite = locomotiveSprite;
+        this.carSprite = carSprite;
     }
 
     public GameObject GetGameObjectFilledWithAnimatableObjectsFromGroup(PassengerAnimator[] animatables, float offsetX)
@@ -24,9 +26,9 @@ public class FloatingTilemapVisual
             GameObject.DestroyImmediate(passengerAnimators[idx]);
         }
 
-        var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
+        var bgObject = (GameObject)GameObject.Instantiate(locomotiveSprite);
 
-        var gameObject = new GameObject();
+        var passengerPositionsObject = new GameObject();
 
         for (int x = 0; x < grid.GetWidth(); x++)
         {
@@ -35,7 +37,7 @@ public class FloatingTilemapVisual
                 var index = Random.Range(0, animatables.Length);
                 Vector3 position = grid.GetWorldPosition(x, y);
                 var passenger = (PassengerAnimator)GameObject.Instantiate(animatables[index], position, Quaternion.Euler(0, 0, 0));
-                passenger.SetParentAndPosition(gameObject.transform, position);
+                passenger.SetParentAndPosition(passengerPositionsObject.transform, position);
             }
         }
 
@@ -44,22 +46,26 @@ public class FloatingTilemapVisual
         var bgObjectWidth = renderer.bounds.size.x / 2;
         var bgObjectHeight = renderer.bounds.size.y / 2;
 
-        gameObject.transform.parent = bgObject.transform;
+        passengerPositionsObject.transform.parent = bgObject.transform;
 
         // Calculate the width of the built animatables set of sprites
-        var bottomLeftPoint = Camera.main.WorldToScreenPoint(gameObject.transform.TransformPoint(0, 0, 0)).x;
-        var topRightPoint = Camera.main.WorldToScreenPoint(gameObject.transform.TransformPoint(1, 1, 0)).x;
+        var bottomLeftPoint = Camera.main.WorldToScreenPoint(passengerPositionsObject.transform.TransformPoint(0, 0, 0)).x;
+        var topRightPoint = Camera.main.WorldToScreenPoint(passengerPositionsObject.transform.TransformPoint(1, 1, 0)).x;
         var width = topRightPoint - bottomLeftPoint;
 
         // Center the whole thing within the background object
-        gameObject.transform.position = new Vector3(bgObjectWidth - width/2 - offsetX, bgObjectHeight - grid.GetWorldHeight()/2);
+        passengerPositionsObject.transform.position = new Vector3(bgObjectWidth - width/2 - offsetX, bgObjectHeight - grid.GetWorldHeight()/2);
+
+        var carObject = (GameObject)GameObject.Instantiate(carSprite);
+        carObject.transform.parent = bgObject.transform;
+        carObject.transform.position = new Vector3(carObject.transform.position.x, carObject.transform.position.y, 0);
 
         return bgObject;
     }
 
     public GameObject GetGameObjectFilledWithObjectsFromGroup(GameObject[] prefabs, float offsetX, float offsetY)
     {
-        var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
+        var bgObject = (GameObject)GameObject.Instantiate(locomotiveSprite);
 
         for (int x = 0; x < grid.GetWidth(); x++)
         {
@@ -80,7 +86,7 @@ public class FloatingTilemapVisual
 
     public GameObject GetGameObjectFilledWithObjects(GameObject prefab)
     {
-        var bgObject = (GameObject)GameObject.Instantiate(backgroundObject);
+        var bgObject = (GameObject)GameObject.Instantiate(locomotiveSprite);
         
         for (int x = 0; x < grid.GetWidth(); x++)
         {

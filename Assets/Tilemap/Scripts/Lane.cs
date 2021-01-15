@@ -63,20 +63,49 @@ public class Lane
     {
         if(vehicle == null) { return false; }
 
-        var renderer = vehicle.gameObject.GetComponent<SpriteRenderer>();
+        var renderers = SpriteRenderersOfVehicle(vehicle);
 
         switch (vehicle.config.startingPosition.direction)
         {
             case Configurations.Vehicle.Direction.LeftToRight:
-                return renderer.bounds.min.x > tilemap.grid.GetRightEnd();
+                return renderers[0].bounds.min.x > tilemap.grid.GetRightEnd();
             case Configurations.Vehicle.Direction.RightToLeft:
-                return renderer.bounds.max.x < tilemap.grid.GetLeftEnd();
+                return renderers[0].bounds.max.x < tilemap.grid.GetLeftEnd();
             case Configurations.Vehicle.Direction.TopToBottom:
-                return renderer.bounds.max.y < tilemap.grid.GetBottomEnd();
+                return renderers[0].bounds.max.y < tilemap.grid.GetBottomEnd();
             case Configurations.Vehicle.Direction.BottomToTop:
-                return renderer.bounds.min.y > tilemap.grid.GetTopEnd();
+
+                var minRenderer = renderers[0].bounds.min.y;
+
+                foreach(var renderer in renderers)
+                {
+                    if (renderer.bounds.min.y < minRenderer)
+                    {
+                        minRenderer = renderer.bounds.min.y;
+                    }
+                }
+
+                return minRenderer > tilemap.grid.GetTopEnd();
             default:
                 return false;
         }
+    }
+
+    private List<SpriteRenderer> SpriteRenderersOfVehicle(ManagedVehicle vehicle)
+    {
+        List<SpriteRenderer> renderers = new List<SpriteRenderer>();
+
+        var renderer = vehicle.gameObject.GetComponent<SpriteRenderer>();
+
+        renderers.Add(renderer);
+
+        var children = vehicle.gameObject.transform.GetComponentsInChildren<SpriteRenderer>();
+
+        foreach(var childTransform in children)
+        {
+            renderers.Add(childTransform);
+        }
+
+        return renderers;
     }
 }

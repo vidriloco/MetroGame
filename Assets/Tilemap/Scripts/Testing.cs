@@ -42,7 +42,8 @@ public class Testing : MonoBehaviour {
     [SerializeField] private TilemapVisual tilemapVisual;
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
-    [SerializeField] private GameObject backgroundObject;
+    [SerializeField] private GameObject locomotiveSprite;
+    [SerializeField] private GameObject carSprite;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
@@ -130,7 +131,7 @@ public class Testing : MonoBehaviour {
                         grid = new Grid<Tilemap.TilemapObject>(4, 7, 7, defaultOrigin, gridDelegate);
                         break;
                     case 3:
-                        grid = new Grid<Tilemap.TilemapObject>(4, 3, 10, defaultOrigin, gridDelegate);
+                        grid = new Grid<Tilemap.TilemapObject>(2, 5, 10, defaultOrigin, gridDelegate);
                         break;
                     default:
                         grid = new Grid<Tilemap.TilemapObject>(4, 9, 7, defaultOrigin, gridDelegate);
@@ -138,7 +139,7 @@ public class Testing : MonoBehaviour {
                 }
 
 
-                var floatingTilemap = new FloatingTilemapVisual(grid, backgroundObject);
+                var floatingTilemap = new FloatingTilemapVisual(grid, locomotiveSprite, carSprite);
 
                 vehicle.prefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, 0);
                 vehicle.childrenObjects = new GameObject[] { };

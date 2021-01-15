@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class ZoomInZoomOut : MonoBehaviour
 {
-    Vector3 touchStart;
+    // Disabled by now
+    /*Vector3 touchStart;
     public float zoomOutMin = 1;
     public float zoomOutMax = 8;
 
@@ -42,5 +43,5 @@ public class ZoomInZoomOut : MonoBehaviour
     void zoom(float increment)
     {
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - increment, zoomOutMin, zoomOutMax);
-    }
+    }*/
 }
