@@ -8,13 +8,15 @@ public class FloatingTilemapVisual
     private Grid<Tilemap.TilemapObject> grid;
     private GameObject locomotiveSprite;
     private GameObject carSprite;
+    private GameObject carCoverSprite;
 
-    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject locomotiveSprite, GameObject carSprite)
+    public FloatingTilemapVisual(Grid<Tilemap.TilemapObject> grid, GameObject locomotiveSprite, GameObject carSprite, GameObject carCoverSprite)
     {
         this.grid = grid;
         this.grid.position = locomotiveSprite.transform.position;
         this.locomotiveSprite = locomotiveSprite;
         this.carSprite = carSprite;
+        this.carCoverSprite = carCoverSprite;
     }
 
     public GameObject GetGameObjectFilledWithAnimatableObjectsFromGroup(PassengerAnimator[] animatables, float offsetX)
@@ -27,6 +29,7 @@ public class FloatingTilemapVisual
         }
 
         var bgObject = (GameObject)GameObject.Instantiate(locomotiveSprite);
+        var bgCoverObject = (GameObject)GameObject.Instantiate(carCoverSprite);
 
         var passengerPositionsObject = new GameObject();
 
@@ -56,9 +59,16 @@ public class FloatingTilemapVisual
         // Center the whole thing within the background object
         passengerPositionsObject.transform.position = new Vector3(bgObjectWidth - width/2 - offsetX, bgObjectHeight - grid.GetWorldHeight()/2);
 
+        // Add an additional car below the main car
         var carObject = (GameObject)GameObject.Instantiate(carSprite);
         carObject.transform.parent = bgObject.transform;
         carObject.transform.position = new Vector3(carObject.transform.position.x, carObject.transform.position.y, 0);
+
+        // Add a cover to hide the passengers while the train moves
+        bgCoverObject.transform.parent = bgObject.transform;
+        bgCoverObject.transform.position = bgObject.transform.position;
+        bgCoverObject.tag = "metro-cover";
+        bgCoverObject.GetComponent<SpriteRenderer>().sortingOrder = 10;
 
         return bgObject;
     }

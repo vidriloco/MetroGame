@@ -44,6 +44,7 @@ public class Testing : MonoBehaviour {
 
     [SerializeField] private GameObject locomotiveSprite;
     [SerializeField] private GameObject carSprite;
+    [SerializeField] private GameObject carCover;
 
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
@@ -70,9 +71,10 @@ public class Testing : MonoBehaviour {
                 {
                     if (speed == 0)
                     {
-                        
-                        if(duration == 6)
+
+                        if (duration == 6)
                         {
+
                             GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
                             GameObject[] deadStations = GameObject.FindGameObjectsWithTag("dead-station");
                             foreach (var station in deadStations)
@@ -81,21 +83,37 @@ public class Testing : MonoBehaviour {
                                 passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
                                 LeanTween.DestroyImmediate(station);
                             }
-                        }
 
-
-                        GameObject[] stations = GameObject.FindGameObjectsWithTag("station");
-                        foreach (var station in stations)
-                        {
-                            station.tag = "dead-station";
-                            LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
+                            GameObject cover = GameObject.FindGameObjectWithTag("metro-cover");
+                            LeanTween.delayedCall(cover, 1f, () =>
                             {
+                                LeanTween.alpha(cover, 1f, 1f).setOnComplete(() => {
+                                    cover.tag = "discard-object";
+                                });
+                            }).setOnCompleteOnRepeat(false);
+                        } else
+                        {
+                            GameObject[] stations = GameObject.FindGameObjectsWithTag("station");
+                            GameObject cover = GameObject.FindGameObjectWithTag("metro-cover");
 
-                                LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
-                                LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
-                            }).setOnCompleteOnRepeat(true);
+                            if (cover != null)
+                            {
+                                LeanTween.alpha(cover, 0f, 1f).setEaseLinear();
+                            }
 
+                            foreach (var station in stations)
+                            {
+                                station.tag = "dead-station";
+                                LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
+                                {
+                                    LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
+                                    LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
+                                }).setOnCompleteOnRepeat(true);
+
+                            }
                         }
+
+                        
                     } else
                     {
                         if(speed == 1 && duration == 1)
@@ -139,7 +157,7 @@ public class Testing : MonoBehaviour {
                 }
 
 
-                var floatingTilemap = new FloatingTilemapVisual(grid, locomotiveSprite, carSprite);
+                var floatingTilemap = new FloatingTilemapVisual(grid, locomotiveSprite, carSprite, carCover);
 
                 vehicle.prefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, 0);
                 vehicle.childrenObjects = new GameObject[] { };
