@@ -180,6 +180,32 @@ public class Testing : MonoBehaviour {
         }
     }
 
+    private void FreePassenger(GameObject passenger)
+    {
+        GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
+        LeanTween.scale(passenger, new Vector3(5f, 5f, 5f), 1).setEase(LeanTweenType.easeInOutQuad);
+        LeanTween.alpha(passenger, 0f, 1).setDestroyOnComplete(true);
+        LeanTween.alpha(passenger.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
+    }
+
+    private (bool, GameObject) ShouldFreePassengerGivenSprite(GameObject sprite)
+    {
+        if (sprite.tag == "dead-station")
+        {
+            if (sprite.transform.parent.gameObject.tag == "passenger")
+            {
+                return (true, sprite.transform.parent.gameObject);
+            }
+        }
+        else if (sprite.tag == "passenger")
+        {
+            var freeSprite = sprite.transform.childCount != 0 && sprite.transform.GetChild(0).tag == "dead-station";
+            return (freeSprite, sprite);
+        }
+
+        return (false, sprite);
+    }
+
     private void Update() {
         foreach (var item in lanes.ToArray())
         {
@@ -191,18 +217,10 @@ public class Testing : MonoBehaviour {
             Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
             RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 
-            var sprite = hit.collider.gameObject;
-            if(sprite.tag == "dead-station")
+            var spriteCombo = ShouldFreePassengerGivenSprite(hit.collider.gameObject);
+            if (spriteCombo.Item1)
             {
-                if(sprite.transform.parent.gameObject.tag == "passenger")
-                {
-                    sprite = sprite.transform.parent.gameObject;
-                }
-
-                GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
-                LeanTween.scale(sprite, new Vector3(10f, 10f, 10f), 1).setEase(LeanTweenType.easeInOutQuad);
-                LeanTween.alpha(sprite, 0f, 1).setDestroyOnComplete(true);
-                LeanTween.alpha(sprite.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
+                FreePassenger(spriteCombo.Item2);
             }
 
             foreach (var item in lanes)

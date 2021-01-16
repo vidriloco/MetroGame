@@ -8,6 +8,8 @@ TagManager:
   - station
   - passenger
   - dead-station
+  - metro-cover
+  - discard-object
   layers:
   - Default
   - TransparentFX
