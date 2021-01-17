@@ -105,24 +105,15 @@ public class Testing : MonoBehaviour {
     {
         Grid<Tilemap.TilemapObject> grid;
 
-        int rangeIndex = UnityEngine.Random.Range(0, 4);
+        int rangeIndex = UnityEngine.Random.Range(0, 2);
 
         switch (rangeIndex)
         {
             case 0:
-                grid = new Grid<Tilemap.TilemapObject>(3, 4, 9, defaultOrigin, gridDelegate);
-                break;
-            case 1:
-                grid = new Grid<Tilemap.TilemapObject>(3, 6, 9, defaultOrigin, gridDelegate);
-                break;
-            case 2:
-                grid = new Grid<Tilemap.TilemapObject>(4, 7, 7, defaultOrigin, gridDelegate);
-                break;
-            case 3:
-                grid = new Grid<Tilemap.TilemapObject>(2, 5, 10, defaultOrigin, gridDelegate);
+                grid = new Grid<Tilemap.TilemapObject>(4, UnityEngine.Random.Range(4, 10), 7, defaultOrigin, gridDelegate);
                 break;
             default:
-                grid = new Grid<Tilemap.TilemapObject>(4, 9, 7, defaultOrigin, gridDelegate);
+                grid = new Grid<Tilemap.TilemapObject>(3, UnityEngine.Random.Range(4, 10), 9, defaultOrigin, gridDelegate);
                 break;
         }
 

@@ -46,18 +46,14 @@ public class FloatingTilemapVisual
 
         var renderer = bgObject.GetComponent<SpriteRenderer>();
 
-        var bgObjectWidth = renderer.bounds.size.x / 2;
+        var passengerPositionX = renderer.bounds.size.x/2 - grid.GetWorldWidth()/2;
+        Debug.Log("MMM " + passengerPositionX);
         var bgObjectHeight = renderer.bounds.size.y / 2;
 
         passengerPositionsObject.transform.parent = bgObject.transform;
 
-        // Calculate the width of the built animatables set of sprites
-        var bottomLeftPoint = Camera.main.WorldToScreenPoint(passengerPositionsObject.transform.TransformPoint(0, 0, 0)).x;
-        var topRightPoint = Camera.main.WorldToScreenPoint(passengerPositionsObject.transform.TransformPoint(1, 1, 0)).x;
-        var width = topRightPoint - bottomLeftPoint;
-
         // Center the whole thing within the background object
-        passengerPositionsObject.transform.position = new Vector3(bgObjectWidth - width/2 - offsetX, bgObjectHeight - grid.GetWorldHeight()/2);
+        passengerPositionsObject.transform.position = new Vector3(passengerPositionX*bgObject.transform.localScale.x, bgObjectHeight - grid.GetWorldHeight()/2);
 
         // Add an additional car below the main car
         var carObject = (GameObject)GameObject.Instantiate(carSprite);
