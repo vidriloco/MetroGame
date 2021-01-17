@@ -47,7 +47,6 @@ public class FloatingTilemapVisual
         var renderer = bgObject.GetComponent<SpriteRenderer>();
 
         var passengerPositionX = renderer.bounds.size.x/2 - grid.GetWorldWidth()/2;
-        Debug.Log("MMM " + passengerPositionX);
         var bgObjectHeight = renderer.bounds.size.y / 2;
 
         passengerPositionsObject.transform.parent = bgObject.transform;
