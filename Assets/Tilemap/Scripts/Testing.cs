@@ -5,6 +5,14 @@ using CodeMonkey.Utils;
 using CodeMonkey;
 using System;
 
+public struct Tags
+{
+    public static string PassengerInPlatform = "passenger-in-platform";
+    public static string Passenger = "platform";
+    public static string PassengerBubbleUsed = "dead-station";
+    public static string PassengerTrapped = "passenger-trapped";
+}
+
 class ViewPort
 {
     public static Vector2 defaultOrigin
@@ -62,8 +70,13 @@ public class Testing : MonoBehaviour {
         foreach (var station in deadStations)
         {
             var passengerInfo = station.transform.parent.gameObject;
-            passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
-            LeanTween.DestroyImmediate(station);
+            if(passengerInfo != null)
+            {
+                passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
+                passengerInfo.tag = Tags.PassengerTrapped;
+                LeanTween.DestroyImmediate(station);
+            }
+            
         }
 
         GameObject cover = GameObject.FindGameObjectWithTag("metro-cover");
@@ -186,32 +199,6 @@ public class Testing : MonoBehaviour {
         }
     }
 
-    private void FreePassenger(GameObject passenger)
-    {
-        GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
-        LeanTween.scale(passenger, new Vector3(5f, 5f, 5f), 1).setEase(LeanTweenType.easeInOutQuad);
-        LeanTween.alpha(passenger, 0f, 1).setDestroyOnComplete(true);
-        LeanTween.alpha(passenger.transform.GetChild(0).gameObject, 0f, 1).setDestroyOnComplete(true);
-    }
-
-    private (bool, GameObject) ShouldFreePassengerGivenSprite(GameObject sprite)
-    {
-        if (sprite.tag == "dead-station")
-        {
-            if (sprite.transform.parent.gameObject.tag == "passenger")
-            {
-                return (true, sprite.transform.parent.gameObject);
-            }
-        }
-        else if (sprite.tag == "passenger")
-        {
-            var freeSprite = sprite.transform.childCount != 0 && sprite.transform.GetChild(0).tag == "dead-station";
-            return (freeSprite, sprite);
-        }
-
-        return (false, sprite);
-    }
-
     private void Update() {
         foreach (var item in lanes.ToArray())
         {
@@ -221,13 +208,6 @@ public class Testing : MonoBehaviour {
 
         if (Input.GetMouseButtonUp(0)) {
             Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-            RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-
-            var spriteCombo = ShouldFreePassengerGivenSprite(hit.collider.gameObject);
-            if (spriteCombo.Item1)
-            {
-                FreePassenger(spriteCombo.Item2);
-            }
 
             foreach (var item in lanes)
             {
