@@ -29,7 +29,7 @@ public class PassengerAnimator : MonoBehaviour
         passengerGameObjectI.GetComponent<SpriteRenderer>().sprite = passengerSprites[passengerSpriteIdx];
         passengerGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 1;
 
-        passengerGameObjectI.tag = "passenger";
+        passengerGameObjectI.tag = Tags.Passenger;
 
         if (shouldShowStation)
         {
@@ -37,7 +37,7 @@ public class PassengerAnimator : MonoBehaviour
 
             stationGameObjectI.GetComponent<SpriteRenderer>().sprite = stationSprites[stationSpriteIdx];
             stationGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 2;
-            stationGameObjectI.tag = "station";
+            stationGameObjectI.tag = Tags.Station;
         }
     }
 

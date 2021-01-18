@@ -5,14 +5,6 @@ using CodeMonkey.Utils;
 using CodeMonkey;
 using System;
 
-public struct Tags
-{
-    public static string PassengerInPlatform = "passenger-in-platform";
-    public static string Passenger = "platform";
-    public static string PassengerBubbleUsed = "dead-station";
-    public static string PassengerTrapped = "passenger-trapped";
-}
-
 class ViewPort
 {
     public static Vector2 defaultOrigin
@@ -66,7 +58,7 @@ public class Testing : MonoBehaviour {
     private void MetroWillCloseDoors()
     {
         GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
-        GameObject[] deadStations = GameObject.FindGameObjectsWithTag("dead-station");
+        GameObject[] deadStations = GameObject.FindGameObjectsWithTag(Tags.StationSymbolMarkedToDrop);
         foreach (var station in deadStations)
         {
             var passengerInfo = station.transform.parent.gameObject;
@@ -79,18 +71,18 @@ public class Testing : MonoBehaviour {
             
         }
 
-        GameObject cover = GameObject.FindGameObjectWithTag("metro-cover");
+        GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
         LeanTween.delayedCall(cover, 1f, () =>
         {
             LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
-                cover.tag = "discard-object";
+                cover.tag = Tags.DiscardObject;
             });
         }).setOnCompleteOnRepeat(false);
     }
 
     private void MetroWillLetPassengersGoInAndOut() {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag("station");
-        GameObject cover = GameObject.FindGameObjectWithTag("metro-cover");
+        GameObject[] stations = GameObject.FindGameObjectsWithTag(Tags.Station);
+        GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
 
         if (cover != null)
         {
@@ -99,7 +91,7 @@ public class Testing : MonoBehaviour {
 
         foreach (var station in stations)
         {
-            station.tag = "dead-station";
+            station.tag = Tags.StationSymbolMarkedToDrop;
             LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
             {
                 LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
@@ -123,10 +115,10 @@ public class Testing : MonoBehaviour {
         switch (rangeIndex)
         {
             case 0:
-                grid = new Grid<Tilemap.TilemapObject>(4, UnityEngine.Random.Range(4, 10), 7, defaultOrigin, gridDelegate);
+                grid = new Grid<Tilemap.TilemapObject>(4, UnityEngine.Random.Range(5, 8), 7, defaultOrigin, gridDelegate);
                 break;
             default:
-                grid = new Grid<Tilemap.TilemapObject>(3, UnityEngine.Random.Range(4, 10), 9, defaultOrigin, gridDelegate);
+                grid = new Grid<Tilemap.TilemapObject>(3, UnityEngine.Random.Range(5, 8), 9, defaultOrigin, gridDelegate);
                 break;
         }
 

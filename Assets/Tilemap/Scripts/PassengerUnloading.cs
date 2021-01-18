@@ -40,7 +40,7 @@ public class PassengerUnloading: MonoBehaviour
         {
             if(draggedPassenger == null) { return; }
 
-            var platformCollider = GameObject.FindGameObjectWithTag(Tags.Passenger).GetComponent<BoxCollider2D>();
+            var platformCollider = GameObject.FindGameObjectWithTag(Tags.Platform).GetComponent<BoxCollider2D>();
             var passengerCollider = draggedPassenger.GetComponent<BoxCollider2D>();
 
             if(draggedPassenger.tag != Tags.PassengerTrapped && platformCollider.bounds.Intersects(passengerCollider.bounds))
@@ -79,16 +79,17 @@ public class PassengerUnloading: MonoBehaviour
     private (bool, GameObject) ShouldFreePassengerGivenSprite(GameObject sprite)
     {
         
-        if (sprite.tag == "dead-station")
+        if (sprite.tag == Tags.StationSymbolMarkedToDrop)
         {
-            if (sprite.transform.parent.gameObject.tag == "passenger")
+            if (sprite.transform.parent.gameObject.tag == Tags.Passenger)
             {
                 return (true, sprite.transform.parent.gameObject);
             }
         }
-        else if (sprite.tag == "passenger")
+        else if (sprite.tag == Tags.Passenger && sprite.transform.childCount > 0)
         {
-            var freeSprite = sprite.transform.childCount != 0 && sprite.transform.GetChild(0).tag == "dead-station";
+            var stationSymbolSprite = sprite.transform.GetChild(0);
+            var freeSprite = sprite.transform.childCount != 0 && stationSymbolSprite.tag == Tags.StationSymbolMarkedToDrop;
             return (freeSprite, sprite);
         }
 

@@ -21,7 +21,7 @@ public class FloatingTilemapVisual
 
     public GameObject GetGameObjectFilledWithAnimatableObjectsFromGroup(PassengerAnimator[] animatables, float offsetX)
     {
-        var passengerAnimators = GameObject.FindGameObjectsWithTag("PA");
+        var passengerAnimators = GameObject.FindGameObjectsWithTag(Tags.PassengerAnimator);
 
         for(var idx = 0; idx < passengerAnimators.Length; idx++)
         {
@@ -62,7 +62,7 @@ public class FloatingTilemapVisual
         // Add a cover to hide the passengers while the train moves
         bgCoverObject.transform.parent = bgObject.transform;
         bgCoverObject.transform.position = bgObject.transform.position;
-        bgCoverObject.tag = "metro-cover";
+        bgCoverObject.tag = Tags.MetroCover;
         bgCoverObject.GetComponent<SpriteRenderer>().sortingOrder = 10;
 
         return bgObject;
