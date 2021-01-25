@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CodeMonkey.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PassengerUnloading: MonoBehaviour
 {
@@ -74,6 +75,18 @@ public class PassengerUnloading: MonoBehaviour
             LeanTween.alpha(originalPassenger, 0f, 1).setDestroyOnComplete(true);
             originalPassenger = null;
         }
+
+        StatsManager.NewPassengerDelivered();
+        Text coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<Text>();
+        coinsCounterText.text = StatsManager.shared.coins.ToString();
+
+        var coinIcon = GameObject.FindGameObjectWithTag(Tags.CoinsIcon);
+
+        LeanTween.scale(coinIcon, new Vector3(1.2f, 1.2f, 1.2f), 0.5f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
+        {
+            LeanTween.scale(coinIcon, new Vector3(0.8f, 0.8f, 0.8f), 0.2f);
+        });
+        LeanTween.rotateAroundLocal(coinIcon, new Vector3(0, 1, 0), 360, 0.5f);
     }
 
     private (bool, GameObject) ShouldFreePassengerGivenSprite(GameObject sprite)

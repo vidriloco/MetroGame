@@ -7,9 +7,16 @@ TagManager:
   - PA
   - station
   - passenger
-  - dead-station
   - metro-cover
   - discard-object
+  - platform
+  - passenger-in-platform
+  - passenger-trapped
+  - station-symbol-remove
+  - coins-counter
+  - experience-counter
+  - coins-icon
+  - experience-icon
   layers:
   - Default
   - TransparentFX
