@@ -8,13 +8,13 @@ public class Tilemap
 
     public event EventHandler OnLoaded;
 
-    public readonly Grid<TilemapObject> grid;
+    public readonly Grid<PassengerSeat> grid;
 
-    public Tilemap(Grid<TilemapObject> grid) {
+    public Tilemap(Grid<PassengerSeat> grid) {
         this.grid = grid;
     }
 
-    public void SetTilemapSprite(Vector3 worldPosition, TilemapObject.TilemapSprite tilemapSprite) {
+    /*public void SetTilemapSprite(Vector3 worldPosition, TilemapObject.TilemapSprite tilemapSprite) {
         TilemapObject tilemapObject = grid.GetGridObject(worldPosition);
         if (tilemapObject != null) {
             tilemapObject.SetTilemapSprite(tilemapSprite);
@@ -23,11 +23,13 @@ public class Tilemap
 
     public void SetTilemapVisual(TilemapVisual tilemapVisual) {
         tilemapVisual.SetGrid(this, grid);
-    }
+    } */
 
     /*
      * Save - Load
      * */
+
+    /*
     public class SaveObject {
         public TilemapObject.SaveObject[] tilemapObjectSaveObjectArray;
     }
@@ -54,6 +56,8 @@ public class Tilemap
         }
         OnLoaded?.Invoke(this, EventArgs.Empty);
     }
+
+    */
 
     /*
      * Represents a single Tilemap Object that exists in each Grid Cell Position

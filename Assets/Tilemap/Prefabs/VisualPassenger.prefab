@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2902143957797352699}
   - component: {fileID: 7851718846793931526}
   m_Layer: 0
-  m_Name: PassengerAnimator
+  m_Name: VisualPassenger
   m_TagString: PA
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,25 +40,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 7161119951682097144}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42ec14bc8af1544e1afca694b1d79f34, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a57b8f3bb95940b0a0cc921e67d22fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   passengerGameObjectRef: {fileID: 4731297322953896829, guid: 407c32c6f324f46dab8fb46e82f0613e, type: 3}
   stationGameObjectRef: {fileID: 4731297322953896829, guid: 407c32c6f324f46dab8fb46e82f0613e, type: 3}
   passengerSprites:
   - {fileID: 21300000, guid: c0a4d425cf16d4a3e9577b365ec0927e, type: 3}
-  - {fileID: 21300000, guid: 3cd57ae2961a04c0ea48d125ef89712e, type: 3}
-  - {fileID: 21300000, guid: f2e3df9ac7bac42fd8affe3c2f75a269, type: 3}
-  - {fileID: 21300000, guid: d384eb694f3f6492daad81f3cef7943d, type: 3}
-  - {fileID: 21300000, guid: e69794be1a61543cc81f73ac0eb5501e, type: 3}
-  - {fileID: 21300000, guid: 2cd22294fa70e45f6b943358200cb589, type: 3}
-  - {fileID: 21300000, guid: 7da2f387208264aaa9f252f6c62388d0, type: 3}
-  - {fileID: 21300000, guid: 976cdd25f52564ef8a63f454c02f3690, type: 3}
-  - {fileID: 21300000, guid: ede56a52b03aa4e6eb5bde190aab6a0f, type: 3}
-  - {fileID: 21300000, guid: 5d3f0ee9f6a434385825a707b62ed357, type: 3}
-  - {fileID: 21300000, guid: 6d010e0c84fac4f58befc8c0b3a10a36, type: 3}
   - {fileID: 21300000, guid: 39c11f6cd2b5b42d4992ae4c256ffc23, type: 3}
-  - {fileID: 21300000, guid: f49afe64bac4f450d8f2cca35ba66913, type: 3}
-  - {fileID: 21300000, guid: 7ec04dbe09438443ab86ac88d38f4410, type: 3}
+  - {fileID: 21300000, guid: 3cd57ae2961a04c0ea48d125ef89712e, type: 3}
+  - {fileID: 21300000, guid: d384eb694f3f6492daad81f3cef7943d, type: 3}
+  - {fileID: 21300000, guid: ede56a52b03aa4e6eb5bde190aab6a0f, type: 3}
   stationSprites:
   - {fileID: 21300000, guid: 5a75ef6e9d16c433ea56bbb651e5e705, type: 3}

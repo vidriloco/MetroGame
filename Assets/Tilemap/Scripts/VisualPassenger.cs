@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PassengerAnimator : MonoBehaviour
+public class VisualPassenger : MonoBehaviour
 {
 
     [SerializeField] public GameObject passengerGameObjectRef;

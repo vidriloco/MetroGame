@@ -50,9 +50,9 @@ public class Testing : MonoBehaviour {
 
     private readonly ArrayList lanes = new ArrayList();
 
-    private Func<Grid<Tilemap.TilemapObject>, int, int, Tilemap.TilemapObject> gridDelegate
+    private Func<Grid<PassengerSeat>, int, int, PassengerSeat> gridDelegate
     {
-        get { return (Grid<Tilemap.TilemapObject> g, int x, int y) => new Tilemap.TilemapObject(g, x, y); }
+        get { return (Grid<PassengerSeat> g, int x, int y) => new PassengerSeat(x, y, g); }
     }
 
     private void MetroWillCloseDoors()
@@ -108,17 +108,17 @@ public class Testing : MonoBehaviour {
 
     private FloatingTilemapVisual BuildRandomPassengersLayout()
     {
-        Grid<Tilemap.TilemapObject> grid;
+        Grid<PassengerSeat> grid;
 
         int rangeIndex = UnityEngine.Random.Range(0, 2);
 
         switch (rangeIndex)
         {
             case 0:
-                grid = new Grid<Tilemap.TilemapObject>(4, UnityEngine.Random.Range(5, 8), 7, defaultOrigin, gridDelegate);
+                grid = new Grid<PassengerSeat>(4, UnityEngine.Random.Range(5, 8), 7, defaultOrigin, gridDelegate);
                 break;
             default:
-                grid = new Grid<Tilemap.TilemapObject>(3, UnityEngine.Random.Range(5, 8), 9, defaultOrigin, gridDelegate);
+                grid = new Grid<PassengerSeat>(3, UnityEngine.Random.Range(5, 8), 9, defaultOrigin, gridDelegate);
                 break;
         }
 
@@ -133,7 +133,7 @@ public class Testing : MonoBehaviour {
         {
             var gridConfig = ViewPort.GenerateGridParametersForCameraViewport(3);
 
-            Grid<Tilemap.TilemapObject> gameArea = new Grid<Tilemap.TilemapObject>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
+            Grid<PassengerSeat> gameArea = new Grid<PassengerSeat>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
 
             var vehicleManager = new VehicleManager(laneConfig.vehicles)
             {
@@ -170,7 +170,7 @@ public class Testing : MonoBehaviour {
 
                 var floatingTilemap = BuildRandomPassengersLayout();
 
-                vehicle.prefab = floatingTilemap.GetGameObjectFilledWithAnimatableObjectsFromGroup(vehicle.animatableObjects, 0);
+                vehicle.prefab = floatingTilemap.GeneratePassengerGrid(vehicle.animatableObjects);
                 vehicle.childrenObjects = new GameObject[] { };
                 var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
@@ -196,16 +196,6 @@ public class Testing : MonoBehaviour {
         {
             var lane = (Lane) item;
             lane.Update();
-        }
-
-        if (Input.GetMouseButtonUp(0)) {
-            Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-
-            foreach (var item in lanes)
-            {
-                var lane = (Lane)item;
-                lane.tilemap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
-            }
         }
         
         if (Input.GetKeyDown(KeyCode.T)) {
@@ -255,6 +245,17 @@ public class Testing : MonoBehaviour {
             CMDebug.TextPopupMouse(tilemapSprite.ToString());
         }
 
+        /*
+        if (Input.GetMouseButtonUp(0))
+        {
+            Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
+
+            foreach (var item in lanes)
+            {
+                var lane = (Lane)item;
+                lane.tilemap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
+            }
+        }
 
         if (Input.GetKeyDown(KeyCode.P)) {
             foreach (var item in lanes.ToArray())
@@ -271,7 +272,7 @@ public class Testing : MonoBehaviour {
                 lane.tilemap.Load();
             }
             CMDebug.TextPopupMouse("Loaded!");
-        }
+        }*/
 
     }
 

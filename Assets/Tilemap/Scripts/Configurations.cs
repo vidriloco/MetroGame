@@ -66,6 +66,6 @@ public class Configurations
         }
 
         [SerializeField] public GameObject[] childrenObjects;
-        [SerializeField] public PassengerAnimator[] animatableObjects;
+        [SerializeField] public VisualPassenger[] animatableObjects;
     }
 }
