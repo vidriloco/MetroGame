@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using CodeMonkey;
 using CodeMonkey.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -76,9 +77,16 @@ public class PassengerUnloading: MonoBehaviour
             originalPassenger = null;
         }
 
+        UpdateCoinStats();
+    }
+
+    private void UpdateCoinStats()
+    {
         StatsManager.NewPassengerDelivered();
         Text coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<Text>();
-        coinsCounterText.text = StatsManager.shared.coins.ToString();
+        var coins = StatsManager.shared.coins.ToString();
+        coinsCounterText.text = coins;
+        CMDebug.TextPopupMouse("+ 2");
 
         var coinIcon = GameObject.FindGameObjectWithTag(Tags.CoinsIcon);
 

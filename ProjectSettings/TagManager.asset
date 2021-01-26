@@ -17,6 +17,7 @@ TagManager:
   - experience-counter
   - coins-icon
   - experience-icon
+  - flying-text
   layers:
   - Default
   - TransparentFX

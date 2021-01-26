@@ -38,12 +38,12 @@ namespace CodeMonkey {
         
         // World text pop up at mouse position
         public static void TextPopupMouse(string text) {
-            UtilsClass.CreateWorldTextPopup(text, UtilsClass.GetMouseWorldPosition());
+            UtilsClass.CreateWorldTextPopup(text, UtilsClass.GetMouseWorldPosition(), Color.yellow);
         }
 
         // Creates a Text pop up at the world position
-        public static void TextPopup(string text, Vector3 position) {
-            UtilsClass.CreateWorldTextPopup(text, position);
+        public static void TextPopup(string text, Vector3 position, Color color) {
+            UtilsClass.CreateWorldTextPopup(text, position, color);
         }
 
         // Text Updater in World, (parent == null) = world position

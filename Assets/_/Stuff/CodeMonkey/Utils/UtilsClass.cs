@@ -49,7 +49,7 @@ namespace CodeMonkey.Utils {
 
         // Get Default Unity Font, used in text objects if no font given
         public static Font GetDefaultFont() {
-            return Resources.GetBuiltinResource<Font>("Arial.ttf");
+            return Resources.Load<Font>("Fonts/JosefinSans-Bold");
         }
 
 
@@ -99,10 +99,12 @@ namespace CodeMonkey.Utils {
             if (color == null) color = Color.white;
             return CreateWorldText(parent, text, localPosition, fontSize, (Color)color, textAnchor, textAlignment, sortingOrder);
         }
-        
+
         // Create Text in the World
-        public static TextMesh CreateWorldText(Transform parent, string text, Vector3 localPosition, int fontSize, Color color, TextAnchor textAnchor, TextAlignment textAlignment, int sortingOrder) {
-            GameObject gameObject = new GameObject("World_Text", typeof(TextMesh));
+        public static TextMesh CreateWorldText(Transform parent, string text, Vector3 localPosition, int fontSize, Color color, TextAnchor textAnchor, TextAlignment textAlignment, int sortingOrder)
+        {
+            GameObject flyingText = GameObject.FindGameObjectWithTag("flying-text");
+            GameObject gameObject = GameObject.Instantiate(flyingText);
             Transform transform = gameObject.transform;
             transform.SetParent(parent, false);
             transform.localPosition = localPosition;
@@ -111,15 +113,14 @@ namespace CodeMonkey.Utils {
             textMesh.alignment = textAlignment;
             textMesh.text = text;
             textMesh.fontSize = fontSize;
-            textMesh.color = color;
+            //textMesh.color = color;
             textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
             return textMesh;
         }
 
-
         // Create a Text Popup in the World, no parent
-        public static void CreateWorldTextPopup(string text, Vector3 localPosition) {
-            CreateWorldTextPopup(null, text, localPosition, 40, Color.white, localPosition + new Vector3(0, 20), 1f);
+        public static void CreateWorldTextPopup(string text, Vector3 localPosition, Color color) {
+            CreateWorldTextPopup(null, text, localPosition, 40, color, localPosition + new Vector3(0, 20), 1f);
         }
         
         // Create a Text Popup in the World
