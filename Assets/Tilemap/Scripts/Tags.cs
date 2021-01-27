@@ -14,7 +14,7 @@ public struct Tags
 
     public static string DiscardObject = "discard-object";
 
-    public static string PassengerAnimator = "PA";
+    public static string VisualPassenger = "PA";
 
     public static string CoinsIcon = "coins-icon";
     public static string CoinsCounter = "coins-counter";

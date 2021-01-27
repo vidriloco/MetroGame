@@ -7,15 +7,12 @@ public struct PassengerSeat
     private readonly int x;
     private readonly int y;
     private readonly Grid<PassengerSeat> grid;
-    private VisualPassenger visualPassenger;
 
     public PassengerSeat(int x, int y, Grid<PassengerSeat> grid) : this()
     {
         this.x = x;
         this.y = y;
         this.grid = grid;
-
-        //this.visualPassenger = visualPassenger;
     }
 
 }
@@ -54,7 +51,7 @@ public class FloatingTilemapVisual
 
     private void ClearActivePassengers()
     {
-        var visualPassengers = GameObject.FindGameObjectsWithTag(Tags.PassengerAnimator);
+        var visualPassengers = GameObject.FindGameObjectsWithTag(Tags.VisualPassenger);
 
         for (var idx = 0; idx < visualPassengers.Length; idx++)
         {

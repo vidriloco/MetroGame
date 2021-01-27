@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,50 +9,44 @@ public class VisualPassenger : MonoBehaviour
     [SerializeField] public GameObject passengerGameObjectRef;
     [SerializeField] public GameObject stationGameObjectRef;
 
-    private GameObject passengerGameObjectI;
-    private GameObject stationGameObjectI;
-
-    private int passengerSpriteIdx = 0;
-    private int stationSpriteIdx = 0;
-
-    [SerializeField] private Sprite[] passengerSprites;
-    [SerializeField] private Sprite[] stationSprites;
+    public GameObject passengerGameObject;
+    public GameObject stationGameObject;
 
     private bool shouldShowStation = false;
 
     public void Awake()
     {
-        passengerSpriteIdx = Random.Range(0, passengerSprites.Length);
-        stationSpriteIdx = Random.Range(0, stationSprites.Length);
-        shouldShowStation = Random.Range(0, 3) == 1;
+        var resourceManager = GameObject.FindObjectOfType<ResourceManager>();
 
-        passengerGameObjectI = Instantiate(passengerGameObjectRef, Vector3.zero, Quaternion.identity);
-        passengerGameObjectI.GetComponent<SpriteRenderer>().sprite = passengerSprites[passengerSpriteIdx];
-        passengerGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        shouldShowStation = UnityEngine.Random.Range(0, 3) == 1;
 
-        passengerGameObjectI.tag = Tags.Passenger;
+        passengerGameObject = Instantiate(passengerGameObjectRef, Vector3.zero, Quaternion.identity);
+        passengerGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomPassenger();
+        passengerGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
+        passengerGameObject.tag = Tags.Passenger;
 
         if (shouldShowStation)
         {
-            stationGameObjectI = Instantiate(stationGameObjectRef, Vector3.zero, Quaternion.identity);
+            stationGameObject = Instantiate(stationGameObjectRef, Vector3.zero, Quaternion.identity);
 
-            stationGameObjectI.GetComponent<SpriteRenderer>().sprite = stationSprites[stationSpriteIdx];
-            stationGameObjectI.GetComponent<SpriteRenderer>().sortingOrder = 2;
-            stationGameObjectI.tag = Tags.Station;
+            stationGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomStation();
+            stationGameObject.GetComponent<SpriteRenderer>().sortingOrder = 2;
+            stationGameObject.tag = Tags.Station;
         }
     }
 
     public void SetParentAndPosition(Transform transform, Vector3 position)
     {
-        if(passengerGameObjectI != null)
+        if(passengerGameObject != null)
         {
-            passengerGameObjectI.transform.parent = transform;
-            passengerGameObjectI.transform.position = position;
+            passengerGameObject.transform.parent = transform;
+            passengerGameObject.transform.position = position;
 
-            if (stationGameObjectI != null)
+            if (stationGameObject != null)
             {
-                stationGameObjectI.transform.parent = passengerGameObjectI.transform;
-                stationGameObjectI.transform.position = position + new Vector3(0, 2, 0);
+                stationGameObject.transform.parent = passengerGameObject.transform;
+                stationGameObject.transform.position = position + new Vector3(0, 2, 0);
             }
         }
     }
