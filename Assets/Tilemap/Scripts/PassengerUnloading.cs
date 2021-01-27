@@ -12,51 +12,43 @@ public class PassengerUnloading: MonoBehaviour
 
     private void Update()
     {
-
         if (Input.GetMouseButtonDown(0))
         {
-            Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-            RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-
-            if (hit.collider.gameObject == null) { return; }
-
-            var spriteCombo = ShouldFreePassengerGivenSprite(hit.collider.gameObject);
-            if (spriteCombo.Item1)
-            {
-                originalPassenger = spriteCombo.Item2;
-                LeanTween.alpha(originalPassenger, 0.2f, 1);
-                draggedPassenger = Instantiate<GameObject>(spriteCombo.Item2);
-            }
+            OnPassengerSelected();
         }
 
         if (Input.GetMouseButton(0))
         {
-            if(draggedPassenger == null) { return; }
-
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - draggedPassenger.transform.position;
-            draggedPassenger.transform.Translate(mousePosition);
+            OnPassengerDragged();
         }
 
-
+        // Dropping a passenger
         if(Input.GetMouseButtonUp(0))
         {
-            if(draggedPassenger == null) { return; }
+            OnPassengerDropped();
+        }
+    }
 
-            var platformCollider = GameObject.FindGameObjectWithTag(Tags.Platform).GetComponent<BoxCollider2D>();
-            var passengerCollider = draggedPassenger.GetComponent<BoxCollider2D>();
+    private void OnPassengerDropped()
+    {
+        if (draggedPassenger == null) { return; }
 
-            if(draggedPassenger.tag != Tags.PassengerTrapped && platformCollider.bounds.Intersects(passengerCollider.bounds))
-            {
-                passengerCollider.tag = Tags.PassengerInPlatform;
-                OffboardChoosenPassenger();
-            } else
-            {
-                LeanTween.moveLocal(draggedPassenger, originalPassenger.transform.position, 0.5f).setDestroyOnComplete(true).setOnComplete(() => {
-                    LeanTween.alpha(originalPassenger, 1f, 1);
-                    draggedPassenger = null;
-                    originalPassenger = null;
-                });
-            }
+        var platformCollider = GameObject.FindGameObjectWithTag(Tags.Platform).GetComponent<BoxCollider2D>();
+        var passengerCollider = draggedPassenger.GetComponent<BoxCollider2D>();
+
+        if (draggedPassenger.tag != Tags.PassengerTrapped && platformCollider.bounds.Intersects(passengerCollider.bounds))
+        {
+            passengerCollider.tag = Tags.PassengerInPlatform;
+            
+            OffboardChoosenPassenger();
+        }
+        else
+        {
+            LeanTween.moveLocal(draggedPassenger, originalPassenger.transform.position, 0.5f).setDestroyOnComplete(true).setOnComplete(() => {
+                LeanTween.alpha(originalPassenger, 1f, 1);
+                draggedPassenger = null;
+                originalPassenger = null;
+            });
         }
     }
 
@@ -64,17 +56,15 @@ public class PassengerUnloading: MonoBehaviour
     {
         GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
 
-        if(draggedPassenger != null)
+        if (draggedPassenger != null)
         {
             LeanTween.scale(draggedPassenger, new Vector3(5f, 5f, 5f), 1).setEase(LeanTweenType.easeInOutQuad);
             LeanTween.alpha(draggedPassenger, 0f, 1).setDestroyOnComplete(true);
-            draggedPassenger = null;
         }
 
         if (originalPassenger != null)
         {
             LeanTween.alpha(originalPassenger, 0f, 1).setDestroyOnComplete(true);
-            originalPassenger = null;
         }
 
         UpdateCoinStats();
@@ -97,7 +87,53 @@ public class PassengerUnloading: MonoBehaviour
         LeanTween.rotateAroundLocal(coinIcon, new Vector3(0, 1, 0), 360, 0.5f);
     }
 
-    private (bool, GameObject) ShouldFreePassengerGivenSprite(GameObject sprite)
+    private void FillSeatOfGonePassenger()
+    {
+        LeanTween.delayedCall(Random.RandomRange(1f, 1.8f), () =>
+        {
+            if (originalPassenger != null)
+            {
+                var passengerObject = GameObject.FindGameObjectWithTag(Tags.VisualPassenger).GetComponent<VisualPassenger>();
+
+                Vector3 position = originalPassenger.transform.position;
+                var visualPassenger = GameObject.Instantiate(passengerObject, position, Quaternion.Euler(0, 0, 0));
+                visualPassenger.SetParentAndPosition(originalPassenger.transform.parent.transform, position);
+                if(visualPassenger.stationGameObject != null)
+                {
+                    visualPassenger.stationGameObject.tag = Tags.StationSymbolMarkedToDrop;
+                }
+                GameObject.DestroyImmediate(originalPassenger);
+            }
+
+        });
+
+    }
+
+    private void OnPassengerDragged()
+    {
+        if (draggedPassenger == null) { return; }
+
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - draggedPassenger.transform.position;
+        draggedPassenger.transform.Translate(mousePosition);
+    }
+
+    private void OnPassengerSelected()
+    {
+        Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
+        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
+
+        if (hit.collider.gameObject == null) { return; }
+
+        var spriteCombo = FetchPassengerSprite(hit.collider.gameObject);
+        if (spriteCombo.Item1)
+        {
+            originalPassenger = spriteCombo.Item2;
+            LeanTween.alpha(originalPassenger, 0.2f, 1);
+            draggedPassenger = Instantiate<GameObject>(spriteCombo.Item2);
+        }
+    }
+
+    private (bool, GameObject) FetchPassengerSprite(GameObject sprite)
     {
         
         if (sprite.tag == Tags.StationSymbolMarkedToDrop)
@@ -117,50 +153,3 @@ public class PassengerUnloading: MonoBehaviour
         return (false, sprite);
     }
 }
-
-//private LineRenderer lineRenderer;
-//private PolygonCollider2D polygonCollider;
-
-// Uncomment this block in order to select multiple passengers within an enclosing group
-/*void Update()
-{
-    if (Input.GetMouseButtonDown(0))
-    {
-
-        lineRenderer.sortingOrder = 12;
-        lineRenderer.positionCount = 0;
-    }
-
-    if (Input.GetMouseButton(0))
-    {
-        FreeDraw();
-    }
-
-    if(Input.GetMouseButtonUp(0))
-    {
-        Vector2[] positions = new Vector2[lineRenderer.positionCount];
-
-        for(var index = 0; index < lineRenderer.positionCount; index++)
-        {
-            positions[index] = lineRenderer.GetPosition(index);
-        }
-
-        polygonCollider = gameObject.GetComponent<PolygonCollider2D>();
-        polygonCollider.SetPath(0, positions);
-
-        //gameObject.transform.position = polygonCollider.bounds.center;
-    }
-}
-
-void FreeDraw()
-{
-
-    lineRenderer.startWidth = 0.1f;
-    lineRenderer.endWidth = 0.1f;
-    Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
-    lineRenderer.positionCount++;
-    lineRenderer.SetPosition(lineRenderer.positionCount - 1, Camera.main.ScreenToWorldPoint(mousePos));
-
-}
-
-*/
