@@ -87,6 +87,7 @@ public class PassengerBehaviour: MonoBehaviour
         LeanTween.rotateAroundLocal(coinIcon, new Vector3(0, 1, 0), 360, 0.5f);
     }
 
+    /*
     private void FillSeatOfGonePassenger()
     {
         LeanTween.delayedCall(Random.RandomRange(1f, 1.8f), () =>
@@ -108,6 +109,7 @@ public class PassengerBehaviour: MonoBehaviour
         });
 
     }
+    */
 
     private void OnPassengerDragged()
     {

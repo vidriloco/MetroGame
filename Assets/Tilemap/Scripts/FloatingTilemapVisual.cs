@@ -22,28 +22,29 @@ public class FloatingTilemapVisual
 
     private Grid<PassengerSeat> grid;
     private readonly GameObject frontCarSprite;
-    private readonly GameObject carSprite;
+    private readonly GameObject closedCarSprite;
     private readonly GameObject carCoverSprite;
     private readonly ResourceManager resourceManager = GameObject.FindObjectOfType<ResourceManager>();
+    private VisualPassenger visualPassenger;
 
-    public FloatingTilemapVisual(Grid<PassengerSeat> grid)
+    public FloatingTilemapVisual(Grid<PassengerSeat> grid, VisualPassenger visualPassenger)
     {
         this.grid = grid;
 
         this.frontCarSprite = resourceManager.knownImages.frontCar;
-        this.carSprite = resourceManager.knownImages.closedCar;
+        this.closedCarSprite = resourceManager.knownImages.closedCar;
         this.carCoverSprite = resourceManager.knownImages.carCover;
-
+        this.visualPassenger = visualPassenger;
         this.grid.position = frontCarSprite.transform.position;
     }
 
-    public GameObject GeneratePassengerGrid(VisualPassenger[] visualPassengers)
+    public GameObject GeneratePassengerGrid()
     {
         var bgObject = GameObject.Instantiate(frontCarSprite);
 
         ClearActivePassengers();
 
-        GeneratePassengerLayoutUsing(bgObject, visualPassengers);
+        GeneratePassengerLayoutUsing(bgObject);
 
         AddSecondCarWith(bgObject);
 
@@ -63,7 +64,7 @@ public class FloatingTilemapVisual
 
     }
 
-    private void GeneratePassengerLayoutUsing(GameObject parentObject, VisualPassenger[] animatables)
+    private void GeneratePassengerLayoutUsing(GameObject parentObject)
     {
         var passengerHolder = new GameObject();
 
@@ -71,10 +72,9 @@ public class FloatingTilemapVisual
         {
             for (int y = 0; y < grid.GetHeight(); y++)
             {
-                var index = Random.Range(0, animatables.Length);
                 Vector3 position = grid.GetWorldPosition(x, y);
-                var visualPassenger = (VisualPassenger) GameObject.Instantiate(animatables[index], position, Quaternion.Euler(0, 0, 0));
-                visualPassenger.SetParentAndPosition(passengerHolder.transform, position);
+                var visualPassengerClone = (VisualPassenger) GameObject.Instantiate(visualPassenger, position, Quaternion.Euler(0, 0, 0));
+                visualPassengerClone.SetParentAndPosition(passengerHolder.transform, position);
             }
         }
 
@@ -91,7 +91,7 @@ public class FloatingTilemapVisual
 
     private void AddSecondCarWith(GameObject parentObject)
     {
-        var carObject = GameObject.Instantiate(carSprite);
+        var carObject = GameObject.Instantiate(closedCarSprite);
         carObject.transform.parent = parentObject.transform;
         carObject.transform.position = new Vector3(carObject.transform.position.x, carObject.transform.position.y, 0);
     }

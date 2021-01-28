@@ -2617,6 +2617,7 @@ MonoBehaviour:
       childrenObjects: []
       animatableObjects:
       - {fileID: 7851718846793931526, guid: d2d505f8aba91495fa1ce2a8cab1d2d3, type: 3}
+  visualPassenger: {fileID: 7851718846793931526, guid: d2d505f8aba91495fa1ce2a8cab1d2d3, type: 3}
 --- !u!4 &1373312278
 Transform:
   m_ObjectHideFlags: 0

@@ -14,8 +14,9 @@ public class MetroBehaviour : MonoBehaviour {
 
     [SerializeField] private TilemapVisual tilemapVisual;
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
+    [SerializeField] public VisualPassenger visualPassenger;
 
-    private Lane lane;
+    private Lane metroLane;
 
     private Func<Grid<PassengerSeat>, int, int, PassengerSeat> gridDelegate
     {
@@ -89,7 +90,8 @@ public class MetroBehaviour : MonoBehaviour {
                 break;
         }
 
-        return new FloatingTilemapVisual(grid);
+
+        return new FloatingTilemapVisual(grid, visualPassenger);
     }
 
     private void Start() {
@@ -128,8 +130,8 @@ public class MetroBehaviour : MonoBehaviour {
             };
 
 
-            lane = new Lane(new Tilemap(gameArea), vehicleManager);
-            lane.vehicleInitialiser = (Configurations.Vehicle vehicle, Lane lane) =>
+            metroLane = new Lane(new Tilemap(gameArea), vehicleManager);
+            metroLane.vehicleInitialiser = (Configurations.Vehicle vehicle, Lane lane) =>
             {
                 GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundArriving();
 
@@ -138,7 +140,7 @@ public class MetroBehaviour : MonoBehaviour {
 
                 var floatingTilemap = BuildRandomPassengersLayout();
 
-                vehicle.prefab = floatingTilemap.GeneratePassengerGrid(vehicle.animatableObjects);
+                vehicle.prefab = floatingTilemap.GeneratePassengerGrid();
                 vehicle.childrenObjects = new GameObject[] { };
                 var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
@@ -150,11 +152,11 @@ public class MetroBehaviour : MonoBehaviour {
 
     void FixedUpdate()
     {
-        lane.FixedUpdate();
+        metroLane.FixedUpdate();
     }
 
     private void Update() {
-        lane.Update();
+        metroLane.Update();
     }
 
 }
