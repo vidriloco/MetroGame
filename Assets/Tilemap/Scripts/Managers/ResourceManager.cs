@@ -10,6 +10,10 @@ public class ResourceManager : MonoBehaviour
     [System.Serializable]
     public struct Images
     {
+        [SerializeField] public GameObject frontCar;
+        [SerializeField] public GameObject closedCar;
+        [SerializeField] public GameObject carCover;
+
         [SerializeField] private Sprite[] passengers;
         [SerializeField] private Sprite[] stations;
 

@@ -42,10 +42,6 @@ public class Testing : MonoBehaviour {
     [SerializeField] private TilemapVisual tilemapVisual;
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
-    [SerializeField] private GameObject locomotiveSprite;
-    [SerializeField] private GameObject carSprite;
-    [SerializeField] private GameObject carCover;
-
     private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
 
     private readonly ArrayList lanes = new ArrayList();
@@ -122,7 +118,7 @@ public class Testing : MonoBehaviour {
                 break;
         }
 
-        return new FloatingTilemapVisual(grid, locomotiveSprite, carSprite, carCover);
+        return new FloatingTilemapVisual(grid);
     }
 
     private void Start() {
@@ -197,82 +193,7 @@ public class Testing : MonoBehaviour {
             var lane = (Lane) item;
             lane.Update();
         }
-        
-        if (Input.GetKeyDown(KeyCode.T)) {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.None;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.VehicleLaneManHoleA;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.VehicleLaneA;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.VehicleLaneManHoleB;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        if (Input.GetKeyDown(KeyCode.D)) {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.VehicleLaneB;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.Sidewalk;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.Path;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            tilemapSprite = Tilemap.TilemapObject.TilemapSprite.Pasture;
-            CMDebug.TextPopupMouse(tilemapSprite.ToString());
-        }
-
-        /*
-        if (Input.GetMouseButtonUp(0))
-        {
-            Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-
-            foreach (var item in lanes)
-            {
-                var lane = (Lane)item;
-                lane.tilemap.SetTilemapSprite(mouseWorldPosition, tilemapSprite);
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.P)) {
-            foreach (var item in lanes.ToArray())
-            {
-                var lane = (Lane)item;
-                lane.tilemap.Save();
-            }
-            CMDebug.TextPopupMouse("Saved!");
-        }
-        if (Input.GetKeyDown(KeyCode.L)) {
-            foreach (var item in lanes.ToArray())
-            {
-                var lane = (Lane)item;
-                lane.tilemap.Load();
-            }
-            CMDebug.TextPopupMouse("Loaded!");
-        }*/
+      
 
     }
 

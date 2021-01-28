@@ -21,22 +21,25 @@ public class FloatingTilemapVisual
 {
 
     private Grid<PassengerSeat> grid;
-    private readonly GameObject locomotiveSprite;
+    private readonly GameObject frontCarSprite;
     private readonly GameObject carSprite;
     private readonly GameObject carCoverSprite;
+    private readonly ResourceManager resourceManager = GameObject.FindObjectOfType<ResourceManager>();
 
-    public FloatingTilemapVisual(Grid<PassengerSeat> grid, GameObject locomotiveSprite, GameObject carSprite, GameObject carCoverSprite)
+    public FloatingTilemapVisual(Grid<PassengerSeat> grid)
     {
         this.grid = grid;
-        this.grid.position = locomotiveSprite.transform.position;
-        this.locomotiveSprite = locomotiveSprite;
-        this.carSprite = carSprite;
-        this.carCoverSprite = carCoverSprite;
+
+        this.frontCarSprite = resourceManager.knownImages.frontCar;
+        this.carSprite = resourceManager.knownImages.closedCar;
+        this.carCoverSprite = resourceManager.knownImages.carCover;
+
+        this.grid.position = frontCarSprite.transform.position;
     }
 
     public GameObject GeneratePassengerGrid(VisualPassenger[] visualPassengers)
     {
-        var bgObject = GameObject.Instantiate(locomotiveSprite);
+        var bgObject = GameObject.Instantiate(frontCarSprite);
 
         ClearActivePassengers();
 
