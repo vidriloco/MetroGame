@@ -5,7 +5,7 @@ using CodeMonkey.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PassengerUnloading: MonoBehaviour
+public class PassengerBehaviour: MonoBehaviour
 {
     private GameObject originalPassenger = null;
     private GameObject draggedPassenger = null;

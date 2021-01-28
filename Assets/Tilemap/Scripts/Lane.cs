@@ -9,13 +9,12 @@ public class Lane
     public Tilemap tilemap;
     private VehicleManager vehicleManager;
     private VehicleFactory vehicleFactory;
-    private Func<Configurations.Vehicle, Lane, ManagedVehicle> vehicleInitialiser;
+    public Func<Configurations.Vehicle, Lane, ManagedVehicle> vehicleInitialiser;
 
-    public Lane(Tilemap tilemap, VehicleManager vehicleManager, Func<Configurations.Vehicle, Lane, ManagedVehicle> vehicleInitialiser)
+    public Lane(Tilemap tilemap, VehicleManager vehicleManager)
     {
         this.tilemap = tilemap;
         this.vehicleManager = vehicleManager;
-        this.vehicleInitialiser = vehicleInitialiser;
     }
 
     public void Update()

@@ -2562,7 +2562,7 @@ GameObject:
   - component: {fileID: 1373312277}
   - component: {fileID: 1373312279}
   m_Layer: 0
-  m_Name: Testing
+  m_Name: MetroBehaviour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2577,7 +2577,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1373312276}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8679bd1c4546284479c2094a21f6a56d, type: 3}
+  m_Script: {fileID: 11500000, guid: 606ac80f6b57d42a3aa60ebedbd045fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tilemapVisual: {fileID: 118979809}
@@ -2617,9 +2617,6 @@ MonoBehaviour:
       childrenObjects: []
       animatableObjects:
       - {fileID: 7851718846793931526, guid: d2d505f8aba91495fa1ce2a8cab1d2d3, type: 3}
-  locomotiveSprite: {fileID: 2760777528938036499, guid: 9599ab086cbfe491ab5edd3bcfda04b5, type: 3}
-  carSprite: {fileID: 2760777528938036499, guid: 4fb23d15ad03f4e48bbf61f359815c63, type: 3}
-  carCover: {fileID: 853665724659937719, guid: 72502b677b57d452d9d06a2ab334c543, type: 3}
 --- !u!4 &1373312278
 Transform:
   m_ObjectHideFlags: 0
@@ -2750,7 +2747,7 @@ GameObject:
   - component: {fileID: 1467618083}
   - component: {fileID: 1467618082}
   m_Layer: 0
-  m_Name: PassengerUnloading
+  m_Name: PassengerBehaviour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3425,6 +3422,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knownImages:
+    frontCar: {fileID: 2760777528938036499, guid: 9599ab086cbfe491ab5edd3bcfda04b5, type: 3}
+    closedCar: {fileID: 2760777528938036499, guid: 4fb23d15ad03f4e48bbf61f359815c63, type: 3}
+    carCover: {fileID: 853665724659937719, guid: 72502b677b57d452d9d06a2ab334c543, type: 3}
     passengers:
     - {fileID: 21300000, guid: c0a4d425cf16d4a3e9577b365ec0927e, type: 3}
     - {fileID: 21300000, guid: 39c11f6cd2b5b42d4992ae4c256ffc23, type: 3}

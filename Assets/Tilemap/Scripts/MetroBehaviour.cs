@@ -5,34 +5,7 @@ using CodeMonkey.Utils;
 using CodeMonkey;
 using System;
 
-class ViewPort
-{
-    public static Vector2 defaultOrigin
-    {
-        get
-        {
-            return Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
-        }
-    }
-
-    public static Vector2 WithPadding(float x, float y)
-    {
-        return defaultOrigin + new Vector2(x, y);
-    }
-
-    public static Configurations.Grid GenerateGridParametersForCameraViewport(int dimension)
-    {
-        var camera = Camera.main;
-        var aspect = Camera.main.aspect;
-
-        var height = camera.orthographicSize * 2;
-        var width = camera.orthographicSize * aspect * 2;
-
-        return new Configurations.Grid((int) width / dimension, (int) height / dimension, dimension);
-    } 
-}
-
-public class Testing : MonoBehaviour {
+public class MetroBehaviour : MonoBehaviour {
 
     private Vector2 defaultOrigin
     {
@@ -42,9 +15,7 @@ public class Testing : MonoBehaviour {
     [SerializeField] private TilemapVisual tilemapVisual;
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
 
-    private Tilemap.TilemapObject.TilemapSprite tilemapSprite;
-
-    private readonly ArrayList lanes = new ArrayList();
+    private Lane lane;
 
     private Func<Grid<PassengerSeat>, int, int, PassengerSeat> gridDelegate
     {
@@ -157,7 +128,8 @@ public class Testing : MonoBehaviour {
             };
 
 
-            lanes.Add(new Lane(new Tilemap(gameArea), vehicleManager, (Configurations.Vehicle vehicle, Lane lane) =>
+            lane = new Lane(new Tilemap(gameArea), vehicleManager);
+            lane.vehicleInitialiser = (Configurations.Vehicle vehicle, Lane lane) =>
             {
                 GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundArriving();
 
@@ -172,29 +144,17 @@ public class Testing : MonoBehaviour {
                 // Change the position where the metro appears
                 vehicle.prefab.transform.position = new Vector3(position.x, -180);
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
-            }));
+            };
         }
-
-        //tilemap.Load();
     }
 
     void FixedUpdate()
     {
-        foreach(var item in lanes)
-        {
-            var lane = (Lane)item;
-            lane.FixedUpdate();
-        }
+        lane.FixedUpdate();
     }
 
     private void Update() {
-        foreach (var item in lanes.ToArray())
-        {
-            var lane = (Lane) item;
-            lane.Update();
-        }
-      
-
+        lane.Update();
     }
 
 }
