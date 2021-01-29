@@ -74,6 +74,7 @@ public class FloatingTilemapVisual
             {
                 Vector3 position = grid.GetWorldPosition(x, y);
                 var visualPassengerClone = (VisualPassenger) GameObject.Instantiate(visualPassenger, position, Quaternion.Euler(0, 0, 0));
+                visualPassengerClone.ConfigureAsPassengerInTrain(true);
                 visualPassengerClone.SetParentAndPosition(passengerHolder.transform, position);
             }
         }

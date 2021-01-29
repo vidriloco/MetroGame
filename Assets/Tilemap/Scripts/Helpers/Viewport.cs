@@ -17,6 +17,20 @@ class ViewPort
         return defaultOrigin + new Vector2(x, y);
     }
 
+    public static float RightMostEdge()
+    {
+        var camera = Camera.main;
+        var aspect = Camera.main.aspect;
+
+        return camera.orthographicSize * aspect * 2;
+    }
+
+    public static float TopMostEdge()
+    {
+        var camera = Camera.main;
+        return camera.orthographicSize * 2;
+    }
+
     public static Configurations.Grid GenerateGridParametersForCameraViewport(int dimension)
     {
         var camera = Camera.main;

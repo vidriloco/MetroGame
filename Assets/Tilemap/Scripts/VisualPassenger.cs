@@ -11,27 +11,39 @@ public class VisualPassenger : MonoBehaviour
     private GameObject passengerGameObject;
     private GameObject stationGameObject;
 
-    private bool shouldShowStation = false;
+    private bool shouldShowStation;
 
-    public void Awake()
+    private ResourceManager resourceManager;
+
+    public void ConfigureAsPassengerInTrain(bool inTrain)
     {
-        var resourceManager = GameObject.FindObjectOfType<ResourceManager>();
-
-        shouldShowStation = UnityEngine.Random.Range(0, 3) == 1;
-
-        passengerGameObject = Instantiate(genericSpriteReference, Vector3.zero, Quaternion.identity);
-        passengerGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomPassenger();
-        passengerGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
-
-        passengerGameObject.tag = Tags.Passenger;
+        passengerGameObject.tag = inTrain ? Tags.Passenger : Tags.PassengerInPlatform;
 
         if (shouldShowStation)
         {
-            stationGameObject = Instantiate(genericSpriteReference, Vector3.zero, Quaternion.identity);
+            stationGameObject.tag = inTrain ? Tags.Station : Tags.StationInPlatform;
+        }
+    }
+
+    private void Start()
+    {
+    }
+
+    public void Awake()
+    {
+        shouldShowStation = UnityEngine.Random.Range(0, 3) == 1;
+        resourceManager = GameObject.FindObjectOfType<ResourceManager>();
+
+        passengerGameObject = Instantiate(genericSpriteReference, transform.position, Quaternion.identity);
+        passengerGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomPassenger();
+        passengerGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
+        if (shouldShowStation)
+        {
+            stationGameObject = Instantiate(genericSpriteReference, transform.position, Quaternion.identity);
 
             stationGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomStation();
             stationGameObject.GetComponent<SpriteRenderer>().sortingOrder = 2;
-            stationGameObject.tag = Tags.Station;
         }
     }
 

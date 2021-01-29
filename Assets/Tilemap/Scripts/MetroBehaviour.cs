@@ -16,6 +16,8 @@ public class MetroBehaviour : MonoBehaviour {
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
     [SerializeField] public VisualPassenger visualPassenger;
 
+
+
     private Lane metroLane;
 
     private Func<Grid<PassengerSeat>, int, int, PassengerSeat> gridDelegate
@@ -27,6 +29,7 @@ public class MetroBehaviour : MonoBehaviour {
     {
         GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
         GameObject[] deadStations = GameObject.FindGameObjectsWithTag(Tags.StationSymbolMarkedToDrop);
+        
         foreach (var station in deadStations)
         {
             var passengerInfo = station.transform.parent.gameObject;

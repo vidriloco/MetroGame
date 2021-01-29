@@ -18,6 +18,7 @@ TagManager:
   - coins-icon
   - experience-icon
   - flying-text
+  - station-in-platform
   layers:
   - Default
   - TransparentFX
