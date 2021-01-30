@@ -4,6 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Configurations.Vehicle;
 
+public enum VehicleStatus
+{
+    OpenDoors,
+    CloseDoors,
+    WillDepart,
+    IsArriving
+}
+
+public delegate void VehicleStatusChangedHandler(VehicleStatus status);
+
 public class VehicleManager
 {
 
@@ -11,6 +21,7 @@ public class VehicleManager
     private ArrayList vehicles = new ArrayList();
     private Configurations.Vehicle[] vehiclesConfigs;
 
+    public event VehicleStatusChangedHandler VehicleStatusChanged;
     public Func<float, float, bool> VehicleWillChangeHandler;
 
     public VehicleManager(Configurations.Vehicle[] vehiclesConfigs)
@@ -55,12 +66,36 @@ public class VehicleManager
             var movement = movements[timing.index];
             if (Time.time - timing.lastTime >= movement.duration)
             {
-                //Debug.Log("Idx: " + timing.index + " Speed: " + movement.speed + " Duration: " + movement.duration + " TD: " + (Time.time - timing.lastTime));
                 sequences[vehicle.config.id].lastTime = Time.time;
                 sequences[vehicle.config.id].movement = movement;
                 sequences[vehicle.config.id].index = timing.index + 1;
-                _ = VehicleWillChangeHandler(movement.speed, movement.duration);
+                VehicleStatusChanged?.Invoke(vehicleStatusGenerator(movement));
+            }
+        }
+    }
 
+    private VehicleStatus vehicleStatusGenerator(InterpolatedMovement movement)
+    {
+        if (movement.speed == 0)
+        {
+
+            if (movement.duration == 6)
+            {
+                return VehicleStatus.CloseDoors;
+            }
+            else
+            {
+                return VehicleStatus.OpenDoors;
+            }
+        }
+        else
+        {
+            if (movement.speed == 1 && movement.duration == 1)
+            {
+                return VehicleStatus.WillDepart;
+            } else
+            {
+                return VehicleStatus.IsArriving;
             }
         }
     }

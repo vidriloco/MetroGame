@@ -25,58 +25,6 @@ public class MetroBehaviour : MonoBehaviour {
         get { return (Grid<PassengerSeat> g, int x, int y) => new PassengerSeat(x, y, g); }
     }
 
-    private void MetroWillCloseDoors()
-    {
-        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
-        GameObject[] deadStations = GameObject.FindGameObjectsWithTag(Tags.StationSymbolMarkedToDrop);
-        
-        foreach (var station in deadStations)
-        {
-            var passengerInfo = station.transform.parent.gameObject;
-            if(passengerInfo != null)
-            {
-                passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
-                passengerInfo.tag = Tags.PassengerTrapped;
-                LeanTween.DestroyImmediate(station);
-            }
-            
-        }
-
-        GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
-        LeanTween.delayedCall(cover, 1f, () =>
-        {
-            LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
-                cover.tag = Tags.DiscardObject;
-            });
-        }).setOnCompleteOnRepeat(false);
-    }
-
-    private void MetroWillLetPassengersGoInAndOut() {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag(Tags.Station);
-        GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
-
-        if (cover != null)
-        {
-            LeanTween.alpha(cover, 0f, 1f).setEaseLinear();
-        }
-
-        foreach (var station in stations)
-        {
-            station.tag = Tags.StationSymbolMarkedToDrop;
-            LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
-            {
-                LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
-                LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
-            }).setOnCompleteOnRepeat(true);
-
-        }
-    }
-
-    private void MetroWillDepart()
-    {
-        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundDeparting();
-    }
-
     private FloatingTilemapVisual BuildRandomPassengersLayout()
     {
         Grid<PassengerSeat> grid;
@@ -107,31 +55,8 @@ public class MetroBehaviour : MonoBehaviour {
 
             Grid<PassengerSeat> gameArea = new Grid<PassengerSeat>(gridConfig.width, gridConfig.height, gridConfig.cellSize, defaultOrigin, gridDelegate);
 
-            var vehicleManager = new VehicleManager(laneConfig.vehicles)
-            {
-                VehicleWillChangeHandler = (float speed, float duration) =>
-                {
-                    if (speed == 0)
-                    {
-
-                        if (duration == 6)
-                        {
-                            MetroWillCloseDoors();
-                        } else {
-                            MetroWillLetPassengersGoInAndOut();
-                        }
-                    } else
-                    {
-                        if (speed == 1 && duration == 1)
-                        {
-                            MetroWillDepart();
-                        }
-                    }
-
-                    return false;
-                }
-            };
-
+            var vehicleManager = new VehicleManager(laneConfig.vehicles);
+            vehicleManager.VehicleStatusChanged += VehicleManager_VehicleStatusChanged;
 
             metroLane = new Lane(new Tilemap(gameArea), vehicleManager);
             metroLane.vehicleInitialiser = (Configurations.Vehicle vehicle, Lane lane) =>
@@ -151,6 +76,74 @@ public class MetroBehaviour : MonoBehaviour {
                 return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
             };
         }
+    }
+
+    private void VehicleManager_VehicleStatusChanged(VehicleStatus status)
+    {
+        switch(status) {
+            case VehicleStatus.CloseDoors:
+                MetroWillCloseDoors();
+                break;
+            case VehicleStatus.OpenDoors:
+                MetroWillOpenDoors();
+                break;
+            case VehicleStatus.WillDepart:
+                MetroWillDepart();
+                break;
+        }
+    }
+
+    private void MetroWillCloseDoors()
+    {
+        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
+        GameObject[] deadStations = GameObject.FindGameObjectsWithTag(Tags.StationSymbolMarkedToDrop);
+
+        foreach (var station in deadStations)
+        {
+            var passengerInfo = station.transform.parent.gameObject;
+            if (passengerInfo != null)
+            {
+                passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
+                passengerInfo.tag = Tags.PassengerTrapped;
+                LeanTween.DestroyImmediate(station);
+            }
+
+        }
+
+        GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
+        LeanTween.delayedCall(cover, 1f, () =>
+        {
+            LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
+                cover.tag = Tags.DiscardObject;
+            });
+        }).setOnCompleteOnRepeat(false);
+    }
+
+    private void MetroWillOpenDoors()
+    {
+        GameObject[] stations = GameObject.FindGameObjectsWithTag(Tags.Station);
+        GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
+
+        if (cover != null)
+        {
+            LeanTween.alpha(cover, 0f, 1f).setEaseLinear();
+        }
+
+        foreach (var station in stations)
+        {
+            station.tag = Tags.StationSymbolMarkedToDrop;
+            LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
+            {
+                LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
+                LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
+            }).setOnCompleteOnRepeat(true);
+
+        }
+    }
+
+    private void MetroWillDepart()
+    {
+        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundDeparting();
     }
 
     void FixedUpdate()
