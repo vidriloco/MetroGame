@@ -19,6 +19,9 @@ TagManager:
   - experience-icon
   - flying-text
   - station-in-platform
+  - metro
+  - debug-object
+  - blocked-movement
   layers:
   - Default
   - TransparentFX

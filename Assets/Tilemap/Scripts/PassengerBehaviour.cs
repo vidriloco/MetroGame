@@ -10,6 +10,19 @@ public class PassengerBehaviour: MonoBehaviour
     private GameObject originalPassenger = null;
     private GameObject draggedPassenger = null;
 
+    [SerializeField] private MetroBehaviour metroController;
+    [SerializeField] private PlatformBehaviour platformController;
+
+    private Bounds PlatformBounds => platformController.GetTilemap().localBounds;
+    private Bounds MetroBounds => GameObject.FindGameObjectWithTag(Tags.Metro).GetComponent<BoxCollider>().bounds;
+
+    private bool DroppingOverPlatformBounds => PlatformBounds.Intersects(draggedPassenger.GetComponent<BoxCollider2D>().bounds);
+    private bool DraggingPlatformPassenger => draggedPassenger.CompareTag(Tags.PassengerInPlatform);
+
+    private bool DroppingOverMetroBounds => MetroBounds.Intersects(draggedPassenger.GetComponent<BoxCollider2D>().bounds);
+    private bool DraggingMetroPassenger => draggedPassenger.CompareTag(Tags.Passenger);
+
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -29,27 +42,86 @@ public class PassengerBehaviour: MonoBehaviour
         }
     }
 
+    private void ReturnPassenger()
+    {
+        LeanTween.moveLocal(draggedPassenger, originalPassenger.transform.position, 0.5f).setDestroyOnComplete(true).setOnComplete(() => {
+            if(originalPassenger != null)
+            {
+                LeanTween.alpha(originalPassenger, 1f, 1);
+                originalPassenger = null;
+            }
+
+            draggedPassenger = null;
+        });
+    }
+
+    private void FreePassenger()
+    {
+        originalPassenger.transform.position = draggedPassenger.transform.position;
+        LeanTween.alpha(originalPassenger, 1, 1);
+        GameObject.DestroyImmediate(draggedPassenger);
+        draggedPassenger = null;
+    }
+
     private void OnPassengerDropped()
     {
         if (draggedPassenger == null) { return; }
 
-        var platformCollider = GameObject.FindGameObjectWithTag(Tags.Platform).GetComponent<BoxCollider2D>();
         var passengerCollider = draggedPassenger.GetComponent<BoxCollider2D>();
+        
+        if(draggedPassenger.CompareTag(Tags.PassengerTrapped))
+        {
+            ReturnPassenger();
+            return;
+        }
 
-        if (draggedPassenger.tag != Tags.PassengerTrapped && platformCollider.bounds.Intersects(passengerCollider.bounds))
+        if(DraggingPlatformPassenger)
         {
-            passengerCollider.tag = Tags.PassengerInPlatform;
-            
-            OffboardChoosenPassenger();
+            if(DroppingOverMetroBounds)
+            {
+                passengerCollider.tag = Tags.Passenger;
+                OffboardChoosenPassenger();
+            } else if(DroppingOverPlatformBounds)
+            {
+                FreePassenger();
+            } else
+            {
+                ReturnPassenger();
+            }
+
         }
-        else
+        else if(DraggingMetroPassenger)
         {
-            LeanTween.moveLocal(draggedPassenger, originalPassenger.transform.position, 0.5f).setDestroyOnComplete(true).setOnComplete(() => {
-                LeanTween.alpha(originalPassenger, 1f, 1);
-                draggedPassenger = null;
-                originalPassenger = null;
-            });
+            if (DroppingOverPlatformBounds)
+            {
+                passengerCollider.tag = Tags.Passenger;
+                DismissOffboardedPassenger();
+            }
+            else
+            {
+                ReturnPassenger();
+            }
         }
+    }
+
+    private void DismissOffboardedPassenger()
+    {
+        GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
+
+        if (originalPassenger != null)
+        {
+            LeanTween.alpha(originalPassenger, 0f, 0.3f).setDestroyOnComplete(true);
+            originalPassenger = null;
+        }
+
+        if (draggedPassenger != null)
+        {
+            draggedPassenger.tag = Tags.DiscardObject;
+            var randomY = Random.Range(PlatformBounds.min.y, PlatformBounds.max.y);
+            LeanTween.move(draggedPassenger, new Vector3(PlatformBounds.max.x, randomY), 1.5f).setDestroyOnComplete(true);
+        }
+
+        UpdateCoinStats();
     }
 
     private void OffboardChoosenPassenger()
@@ -66,6 +138,8 @@ public class PassengerBehaviour: MonoBehaviour
         {
             LeanTween.alpha(originalPassenger, 0f, 1).setDestroyOnComplete(true);
         }
+
+        draggedPassenger = null;
 
         UpdateCoinStats();
     }
@@ -87,30 +161,6 @@ public class PassengerBehaviour: MonoBehaviour
         LeanTween.rotateAroundLocal(coinIcon, new Vector3(0, 1, 0), 360, 0.5f);
     }
 
-    /*
-    private void FillSeatOfGonePassenger()
-    {
-        LeanTween.delayedCall(Random.RandomRange(1f, 1.8f), () =>
-        {
-            if (originalPassenger != null)
-            {
-                var passengerObject = GameObject.FindGameObjectWithTag(Tags.VisualPassenger).GetComponent<VisualPassenger>();
-
-                Vector3 position = originalPassenger.transform.position;
-                var visualPassenger = GameObject.Instantiate(passengerObject, position, Quaternion.Euler(0, 0, 0));
-                visualPassenger.SetParentAndPosition(originalPassenger.transform.parent.transform, position);
-                if(visualPassenger.stationGameObject != null)
-                {
-                    visualPassenger.stationGameObject.tag = Tags.StationSymbolMarkedToDrop;
-                }
-                GameObject.DestroyImmediate(originalPassenger);
-            }
-
-        });
-
-    }
-    */
-
     private void OnPassengerDragged()
     {
         if (draggedPassenger == null) { return; }
@@ -122,36 +172,34 @@ public class PassengerBehaviour: MonoBehaviour
     private void OnPassengerSelected()
     {
         Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
+        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, -Vector2.up);
 
         if (hit.collider.gameObject == null) { return; }
 
         var spriteCombo = FetchPassengerSprite(hit.collider.gameObject);
-        if (spriteCombo.Item1)
+        if (spriteCombo != null)
         {
-            originalPassenger = spriteCombo.Item2;
-            LeanTween.alpha(originalPassenger, 0.2f, 1);
-            draggedPassenger = Instantiate<GameObject>(spriteCombo.Item2);
+            originalPassenger = spriteCombo;
+            LeanTween.alpha(originalPassenger, 0, 0.2f);
+            draggedPassenger = Instantiate<GameObject>(spriteCombo);
         }
+        
     }
 
-    private (bool, GameObject) FetchPassengerSprite(GameObject sprite)
+    private GameObject FetchPassengerSprite(GameObject sprite)
     {
-        
-        if (sprite.tag == Tags.StationSymbolMarkedToDrop)
+        if (sprite.CompareTag(Tags.Station) || sprite.CompareTag(Tags.StationInPlatform))
         {
-            if (sprite.transform.parent.gameObject.tag == Tags.Passenger)
-            {
-                return (true, sprite.transform.parent.gameObject);
-            }
+            var parentSprite = sprite.transform.parent.gameObject;
+            return FetchPassengerSprite(parentSprite);
         }
-        else if (sprite.tag == Tags.Passenger && sprite.transform.childCount > 0)
+        else if (sprite.CompareTag(Tags.Passenger) || sprite.CompareTag(Tags.PassengerInPlatform))
         {
-            var stationSymbolSprite = sprite.transform.GetChild(0);
-            var freeSprite = sprite.transform.childCount != 0 && stationSymbolSprite.tag == Tags.StationSymbolMarkedToDrop;
-            return (freeSprite, sprite);
+            Debug.Log("Fetch passenger");
+            return sprite;
         }
 
-        return (false, sprite);
+        Debug.Log("NULL: " + sprite);
+        return null;
     }
 }

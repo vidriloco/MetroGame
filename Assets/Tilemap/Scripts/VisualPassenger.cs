@@ -25,10 +25,6 @@ public class VisualPassenger : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-    }
-
     public void Awake()
     {
         shouldShowStation = UnityEngine.Random.Range(0, 3) == 1;

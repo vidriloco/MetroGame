@@ -6,42 +6,43 @@ public class PlatformBehaviour : MonoBehaviour
 {
 
     [SerializeField] public MetroBehaviour metroBehaviour;
-    private BoxCollider2D collider;
+    private UnityEngine.Tilemaps.Tilemap tilemap;
     private ArrayList movingSpots = new ArrayList();
     private GameObject platform;
+    public  float speed = 2f;
+    private float waitTime = 2f;
+    public  float startWaitTime;
 
     private void Start()
     {
-        collider = GetComponentInChildren<BoxCollider2D>();
+        tilemap = GetComponentInChildren<UnityEngine.Tilemaps.Tilemap>();
         platform = GameObject.FindGameObjectWithTag(Tags.Platform);
 
         for (int idx = 0; idx < 10; idx++)
         {
-            var xPosition = Random.RandomRange(collider.bounds.min.x, collider.bounds.max.x);
-            var yPosition = Random.RandomRange(collider.bounds.min.y, collider.bounds.max.y);
-            Debug.Log(xPosition + " - " + yPosition);
+            var position = RandomPosition();
 
-            var position = new Vector2(xPosition, yPosition);
-            var visualPassengerClone = (VisualPassenger)GameObject.Instantiate(metroBehaviour.visualPassenger, position, Quaternion.Euler(0, 0, 0));
+            var visualPassengerClone = GameObject.Instantiate(metroBehaviour.visualPassenger, position, Quaternion.Euler(0, 0, 0));
             visualPassengerClone.ConfigureAsPassengerInTrain(false);
             visualPassengerClone.SetParentAndPosition(platform.transform, position);
 
             movingSpots.Add(position);
         }
-        
     }
 
-    public float speed = 1f;
-    private float waitTime = 2f;
-    public float startWaitTime;
+    private readonly float offset = 10;
 
-    private Vector2 randomPosition()
+    public UnityEngine.Tilemaps.Tilemap GetTilemap()
     {
-        var xPosition = UnityEngine.Random.Range(collider.bounds.min.x, collider.bounds.max.x);
-        var yPosition = UnityEngine.Random.Range(collider.bounds.min.y, collider.bounds.max.y);
+        return tilemap;
+    }
+
+    private Vector2 RandomPosition()
+    {
+        var xPosition = Random.Range(tilemap.localBounds.min.x + offset, tilemap.localBounds.max.x - offset);
+        var yPosition = Random.Range(tilemap.localBounds.min.y + offset, tilemap.localBounds.max.y - offset);
         return new Vector2(xPosition, yPosition);
     }
-
 
     private void Update()
     {
@@ -49,16 +50,14 @@ public class PlatformBehaviour : MonoBehaviour
         {
             var passengerGameObject = platform.transform.GetChild(idx).gameObject;
             var position = (Vector2) movingSpots[idx];
-            passengerGameObject.transform.position = Vector2.MoveTowards(passengerGameObject.transform.position, position, speed * Time.deltaTime);
-            Debug.Log(passengerGameObject);
 
-            //LeanTween.move(passengerGameObject, moveSpot.position, speed);
-            Debug.Log("Walking");
+            passengerGameObject.transform.position = Vector2.MoveTowards(passengerGameObject.transform.position, position, speed * Time.deltaTime);
+
             if (Vector2.Distance(passengerGameObject.transform.position, position) < 0.2f)
             {
                 if (waitTime <= 0)
                 {
-                    movingSpots[idx] = randomPosition();
+                    movingSpots[idx] = RandomPosition();
                     waitTime = startWaitTime;
                 }
                 else

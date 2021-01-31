@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 4160356617717619217}
   - component: {fileID: 464225701230638312}
   - component: {fileID: 893479010692826210}
+  - component: {fileID: 4061534885755080026}
   m_Layer: 0
   m_Name: Metro
-  m_TagString: Untagged
+  m_TagString: metro
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,3 +100,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &4061534885755080026
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2760777528938036499}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 8.779999, y: 25.651125, z: 0.2}
+  m_Center: {x: 4.3899994, y: 12.8255625, z: 0}
