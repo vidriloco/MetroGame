@@ -9,7 +9,8 @@ public enum VehicleStatus
     OpenDoors,
     CloseDoors,
     WillDepart,
-    IsArriving
+    IsArriving,
+    Gone
 }
 
 public delegate void VehicleStatusChangedHandler(VehicleStatus status);
@@ -121,6 +122,7 @@ public class VehicleManager
         GameObject.DestroyImmediate(vehicle.gameObject);
         vehicles.Remove(vehicle);
         sequences.Remove(vehicle.config.id);
+        VehicleStatusChanged.Invoke(VehicleStatus.Gone);
     }
 
     public void UpdateManagedVehicles(Func<ManagedVehicle, bool> vehicleShouldBeDestroyed)
