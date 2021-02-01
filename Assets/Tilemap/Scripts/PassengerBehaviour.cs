@@ -49,6 +49,8 @@ public class PassengerBehaviour: MonoBehaviour
     }
     private bool DraggingMetroPassenger => draggedPassenger.CompareTag(Tags.Passenger);
 
+    private ArrayList freedPassengerSeats = new ArrayList();
+
     private void Start()
     {
         metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
@@ -115,10 +117,10 @@ public class PassengerBehaviour: MonoBehaviour
         {
             if(DroppingOverMetroBounds)
             {
-                if (metroStatus == VehicleStatus.OpenDoors)
+                if (metroStatus == VehicleStatus.OpenDoors && freedPassengerSeats.Count > 0)
                 {
                     passengerCollider.tag = Tags.Passenger;
-                    OffboardChoosenPassenger();
+                    InboardChoosenPassenger();
                 } else
                 {
                     ReturnPassenger();
@@ -160,6 +162,7 @@ public class PassengerBehaviour: MonoBehaviour
 
         if (originalPassenger != null)
         {
+            freedPassengerSeats.Add(originalPassenger.transform.position);
             LeanTween.alpha(originalPassenger, 0f, 0.3f).setDestroyOnComplete(true);
             originalPassenger = null;
         }
@@ -174,14 +177,23 @@ public class PassengerBehaviour: MonoBehaviour
         UpdateCoinStats();
     }
 
-    private void OffboardChoosenPassenger()
+    private void InboardChoosenPassenger()
     {
         GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
 
         if (draggedPassenger != null)
         {
-            LeanTween.scale(draggedPassenger, new Vector3(5f, 5f, 5f), 1).setEase(LeanTweenType.easeInOutQuad);
-            LeanTween.alpha(draggedPassenger, 0f, 1).setDestroyOnComplete(true);
+            var nextPosition = (Vector3) freedPassengerSeats[0];
+            LeanTween.move(draggedPassenger, nextPosition, 1f);
+            draggedPassenger.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
+            if (draggedPassenger.transform.childCount > 0)
+            {
+                draggedPassenger.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = 2;
+            }
+
+            freedPassengerSeats.RemoveAt(0);
+            draggedPassenger.transform.SetParent(metroController.metro.transform);
         }
 
         if (originalPassenger != null)
@@ -245,11 +257,9 @@ public class PassengerBehaviour: MonoBehaviour
         }
         else if (sprite.CompareTag(Tags.Passenger) || sprite.CompareTag(Tags.PassengerInPlatform))
         {
-            Debug.Log("Fetch passenger");
             return sprite;
         }
 
-        Debug.Log("NULL: " + sprite);
         return null;
     }
 }

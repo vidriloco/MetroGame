@@ -67,22 +67,24 @@ public class MetroBehaviour : MonoBehaviour {
             var vehicleManager = new VehicleManager(laneConfig.vehicles);
             vehicleManager.VehicleStatusChanged += VehicleManager_VehicleStatusChanged;
 
-            metroLane = new Lane(new Tilemap(gameArea), vehicleManager);
-            metroLane.vehicleInitialiser = (Configurations.Vehicle vehicle, Lane lane) =>
+            metroLane = new Lane(new Tilemap(gameArea), vehicleManager)
             {
-                GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundArriving();
+                vehicleInitialiser = (Configurations.Vehicle vehicle, Lane lane) =>
+                {
+                    GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundArriving();
 
-                var position = lane.PositionForConfigurationVehicle(vehicle);
-                var offsetX = lane.WorldDistanceFromOriginToPositionXAxis(vehicle.startingPosition.value);
+                    var position = lane.PositionForConfigurationVehicle(vehicle);
+                    var offsetX = lane.WorldDistanceFromOriginToPositionXAxis(vehicle.startingPosition.value);
 
-                var floatingTilemap = BuildRandomPassengersLayout();
+                    var floatingTilemap = BuildRandomPassengersLayout();
 
-                vehicle.prefab = floatingTilemap.GeneratePassengerGrid();
-                vehicle.childrenObjects = new GameObject[] { };
-                var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
+                    vehicle.prefab = floatingTilemap.GeneratePassengerGrid();
+                    vehicle.childrenObjects = new GameObject[] { };
+                    var renderer = vehicle.prefab.GetComponent<SpriteRenderer>();
                 // Change the position where the metro appears
                 vehicle.prefab.transform.position = new Vector3(position.x, -180);
-                return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
+                    return vehicleFactory.LoadVehicleFromConfiguration(vehicle);
+                }
             };
         }
     }
