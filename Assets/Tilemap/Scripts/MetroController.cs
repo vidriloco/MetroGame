@@ -7,7 +7,7 @@ using System;
 
 public delegate void MetroStatusChangedHandler(VehicleStatus status);
 
-public class MetroBehaviour : MonoBehaviour {
+public class MetroController : MonoBehaviour {
 
     private Vector2 defaultOrigin
     {

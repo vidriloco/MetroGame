@@ -5,13 +5,13 @@ using CodeMonkey.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PassengerBehaviour: MonoBehaviour
+public class PassengerController: MonoBehaviour
 {
     private GameObject originalPassenger = null;
     private GameObject draggedPassenger = null;
 
-    [SerializeField] private MetroBehaviour metroController;
-    [SerializeField] private PlatformBehaviour platformController;
+    [SerializeField] private MetroController metroController;
+    [SerializeField] private PlatformController platformController;
 
     private VehicleStatus metroStatus;
 

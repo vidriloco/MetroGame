@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlatformBehaviour : MonoBehaviour
+public class PlatformController : MonoBehaviour
 {
 
-    [SerializeField] public MetroBehaviour metroBehaviour;
+    [SerializeField] public MetroController metroController;
     private UnityEngine.Tilemaps.Tilemap tilemap;
     private ArrayList movingSpots = new ArrayList();
     private GameObject platform;
@@ -24,17 +24,17 @@ public class PlatformBehaviour : MonoBehaviour
         {
             var position = RandomPosition();
 
-            VisualPassenger visualPassengerClone = GameObject.Instantiate<VisualPassenger>(metroBehaviour.visualPassenger, position, Quaternion.Euler(0, 0, 0));
+            VisualPassenger visualPassengerClone = GameObject.Instantiate<VisualPassenger>(metroController.visualPassenger, position, Quaternion.Euler(0, 0, 0));
             visualPassengerClone.ConfigureAsPassengerInTrain(false);
             visualPassengerClone.SetParentAndPosition(platform.transform, position);
 
             movingSpots.Add(position);
         }
 
-        metroBehaviour.MetroStatusChanged += MetroBehaviour_MetroStatusChanged;
+        metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
     }
 
-    private void MetroBehaviour_MetroStatusChanged(VehicleStatus status)
+    private void MetroController_MetroStatusChanged(VehicleStatus status)
     {
         switch(status)
         {
