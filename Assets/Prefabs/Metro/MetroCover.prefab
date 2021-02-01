@@ -8,16 +8,16 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5370659026645314878}
+  - component: {fileID: 6715406253475630488}
   - component: {fileID: 5316044850219526054}
   m_Layer: 0
   m_Name: MetroCover
-  m_TagString: Untagged
+  m_TagString: metro-cover
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5370659026645314878
+--- !u!4 &6715406253475630488
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

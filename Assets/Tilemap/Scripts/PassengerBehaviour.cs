@@ -13,15 +13,51 @@ public class PassengerBehaviour: MonoBehaviour
     [SerializeField] private MetroBehaviour metroController;
     [SerializeField] private PlatformBehaviour platformController;
 
+    private VehicleStatus metroStatus;
+
     private Bounds PlatformBounds => platformController.GetTilemap().localBounds;
-    private Bounds MetroBounds => GameObject.FindGameObjectWithTag(Tags.Metro).GetComponent<BoxCollider>().bounds;
+    private Bounds? MetroBounds
+    {
+        get
+        {
+            var metroCar = metroController.metro;
+            if(metroCar != null)
+            {
+                return metroCar.GetComponent<BoxCollider>().bounds;
+            } else
+            {
+                return null;
+            }
+        }
+    }
 
     private bool DroppingOverPlatformBounds => PlatformBounds.Intersects(draggedPassenger.GetComponent<BoxCollider2D>().bounds);
     private bool DraggingPlatformPassenger => draggedPassenger.CompareTag(Tags.PassengerInPlatform);
 
-    private bool DroppingOverMetroBounds => MetroBounds.Intersects(draggedPassenger.GetComponent<BoxCollider2D>().bounds);
+    private bool DroppingOverMetroBounds
+    {
+        get
+        {
+            if(MetroBounds != null)
+            {
+                return (bool)(MetroBounds?.Intersects(draggedPassenger.GetComponent<BoxCollider2D>().bounds));
+            } else
+            {
+                return false;
+            }
+        }
+    }
     private bool DraggingMetroPassenger => draggedPassenger.CompareTag(Tags.Passenger);
 
+    private void Start()
+    {
+        metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
+    }
+
+    private void MetroController_MetroStatusChanged(VehicleStatus status)
+    {
+        metroStatus = status;
+    }
 
     private void Update()
     {
@@ -79,8 +115,15 @@ public class PassengerBehaviour: MonoBehaviour
         {
             if(DroppingOverMetroBounds)
             {
-                passengerCollider.tag = Tags.Passenger;
-                OffboardChoosenPassenger();
+                if (metroStatus == VehicleStatus.OpenDoors)
+                {
+                    passengerCollider.tag = Tags.Passenger;
+                    OffboardChoosenPassenger();
+                } else
+                {
+                    ReturnPassenger();
+                }
+                
             } else if(DroppingOverPlatformBounds)
             {
                 FreePassenger();
@@ -94,8 +137,15 @@ public class PassengerBehaviour: MonoBehaviour
         {
             if (DroppingOverPlatformBounds)
             {
-                passengerCollider.tag = Tags.Passenger;
-                DismissOffboardedPassenger();
+                if (metroStatus == VehicleStatus.OpenDoors)
+                {
+                    passengerCollider.tag = Tags.Passenger;
+                    DismissOffboardedPassenger();
+                } else
+                {
+                    ReturnPassenger();
+                }
+                    
             }
             else
             {
@@ -174,7 +224,7 @@ public class PassengerBehaviour: MonoBehaviour
         Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
         RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, -Vector2.up);
 
-        if (hit.collider.gameObject == null) { return; }
+        if (hit.collider == null) { return; }
 
         var spriteCombo = FetchPassengerSprite(hit.collider.gameObject);
         if (spriteCombo != null)

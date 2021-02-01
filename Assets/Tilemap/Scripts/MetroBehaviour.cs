@@ -5,6 +5,8 @@ using CodeMonkey.Utils;
 using CodeMonkey;
 using System;
 
+public delegate void MetroStatusChangedHandler(VehicleStatus status);
+
 public class MetroBehaviour : MonoBehaviour {
 
     private Vector2 defaultOrigin
@@ -12,11 +14,18 @@ public class MetroBehaviour : MonoBehaviour {
         get { return ViewPort.defaultOrigin; }
     }
 
+    public GameObject metro
+    {
+        get {
+            return GameObject.FindGameObjectWithTag(Tags.Metro);
+        }
+    }
+
     [SerializeField] private TilemapVisual tilemapVisual;
     [SerializeField] private Configurations.Lane[] lanesConfigurations;
     [SerializeField] public VisualPassenger visualPassenger;
 
-
+    public event MetroStatusChangedHandler MetroStatusChanged;
 
     private Lane metroLane;
 
@@ -80,7 +89,9 @@ public class MetroBehaviour : MonoBehaviour {
 
     private void VehicleManager_VehicleStatusChanged(VehicleStatus status)
     {
-        switch(status) {
+        MetroStatusChanged?.Invoke(status);
+
+        switch (status) {
             case VehicleStatus.CloseDoors:
                 MetroWillCloseDoors();
                 break;
@@ -93,22 +104,20 @@ public class MetroBehaviour : MonoBehaviour {
         }
     }
 
+    private void MarkPassengersWithColor(Color color)
+    {
+        GameObject[] passengers = GameObject.FindGameObjectsWithTag(Tags.Passenger);
+        foreach (var passenger in passengers)
+        {
+            passenger.GetComponent<SpriteRenderer>().color = color;
+        }
+    }
+
     private void MetroWillCloseDoors()
     {
         GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
-        GameObject[] deadStations = GameObject.FindGameObjectsWithTag(Tags.StationSymbolMarkedToDrop);
 
-        foreach (var station in deadStations)
-        {
-            var passengerInfo = station.transform.parent.gameObject;
-            if (passengerInfo != null)
-            {
-                passengerInfo.GetComponent<SpriteRenderer>().color = Color.red;
-                passengerInfo.tag = Tags.PassengerTrapped;
-                LeanTween.DestroyImmediate(station);
-            }
-
-        }
+        MarkPassengersWithColor(Color.red);
 
         GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
         LeanTween.delayedCall(cover, 1f, () =>
@@ -121,29 +130,18 @@ public class MetroBehaviour : MonoBehaviour {
 
     private void MetroWillOpenDoors()
     {
-        GameObject[] stations = GameObject.FindGameObjectsWithTag(Tags.Station);
         GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
 
         if (cover != null)
         {
             LeanTween.alpha(cover, 0f, 1f).setEaseLinear();
         }
-
-        foreach (var station in stations)
-        {
-            station.tag = Tags.StationSymbolMarkedToDrop;
-            LeanTween.delayedCall(station, UnityEngine.Random.Range(0, 5), () =>
-            {
-                LeanTween.alpha(station, 0f, 1f).setLoopPingPong();
-                LeanTween.move(station, new Vector3(station.transform.position.x, station.transform.position.y + 2f, 0), 1).setLoopPingPong();
-            }).setOnCompleteOnRepeat(true);
-
-        }
     }
 
     private void MetroWillDepart()
     {
         GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundDeparting();
+        MarkPassengersWithColor(Color.white);
     }
 
     void FixedUpdate()

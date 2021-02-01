@@ -19,9 +19,19 @@ public class VisualPassenger : MonoBehaviour
     {
         passengerGameObject.tag = inTrain ? Tags.Passenger : Tags.PassengerInPlatform;
 
+        if(!inTrain)
+        {
+            passengerGameObject.GetComponent<SpriteRenderer>().sortingOrder = 4;
+        }
+
         if (shouldShowStation)
         {
             stationGameObject.tag = inTrain ? Tags.Station : Tags.StationInPlatform;
+
+            if (!inTrain)
+            {
+                stationGameObject.GetComponent<SpriteRenderer>().sortingOrder = 5;
+            }
         }
     }
 

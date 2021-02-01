@@ -5,10 +5,10 @@ using UnityEngine;
 public struct Tags
 {
     public static string Platform = "platform";
-    public static string Metro = "metro";
 
-    public static string StationSymbolMarkedToDrop = "station-symbol-remove";
+    public static string Metro = "metro";
     public static string MetroCover = "metro-cover";
+    public static string MetroCar = "metro-car";
 
     public static string Station = "station";
     public static string StationInPlatform = "station-in-platform";

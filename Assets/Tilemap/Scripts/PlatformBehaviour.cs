@@ -9,9 +9,11 @@ public class PlatformBehaviour : MonoBehaviour
     private UnityEngine.Tilemaps.Tilemap tilemap;
     private ArrayList movingSpots = new ArrayList();
     private GameObject platform;
-    public  float speed = 2f;
+
+    private readonly float speed = 2f;
     private float waitTime = 2f;
-    public  float startWaitTime;
+    private readonly float startWaitTime;
+    private readonly float offset = 10;
 
     private void Start()
     {
@@ -22,15 +24,38 @@ public class PlatformBehaviour : MonoBehaviour
         {
             var position = RandomPosition();
 
-            var visualPassengerClone = GameObject.Instantiate(metroBehaviour.visualPassenger, position, Quaternion.Euler(0, 0, 0));
+            VisualPassenger visualPassengerClone = GameObject.Instantiate<VisualPassenger>(metroBehaviour.visualPassenger, position, Quaternion.Euler(0, 0, 0));
             visualPassengerClone.ConfigureAsPassengerInTrain(false);
             visualPassengerClone.SetParentAndPosition(platform.transform, position);
 
             movingSpots.Add(position);
         }
+
+        metroBehaviour.MetroStatusChanged += MetroBehaviour_MetroStatusChanged;
     }
 
-    private readonly float offset = 10;
+    private void MetroBehaviour_MetroStatusChanged(VehicleStatus status)
+    {
+        switch(status)
+        {
+            case VehicleStatus.CloseDoors:
+                MarkPassengersWithColor(Color.red);
+                break;
+            case VehicleStatus.WillDepart:
+                MarkPassengersWithColor(Color.white);
+                break;
+        }
+    }
+
+    private void MarkPassengersWithColor(Color color)
+    {
+        for (var idx = 0; idx < platform.transform.childCount; idx++)
+        {
+            var passengerGameObject = platform.transform.GetChild(idx).gameObject;
+            passengerGameObject.GetComponent<SpriteRenderer>().color = color;
+
+        }
+    }
 
     public UnityEngine.Tilemaps.Tilemap GetTilemap()
     {

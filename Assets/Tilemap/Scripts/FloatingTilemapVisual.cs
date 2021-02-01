@@ -104,7 +104,7 @@ public class FloatingTilemapVisual
         bgCoverObject.transform.parent = parentObject.transform;
         bgCoverObject.transform.position = parentObject.transform.position;
         bgCoverObject.tag = Tags.MetroCover;
-        bgCoverObject.GetComponent<SpriteRenderer>().sortingOrder = 10;
+        bgCoverObject.GetComponent<SpriteRenderer>().sortingOrder = 3;
 
         // Let it be hidden initially
         Color bgCoverObjectSpriteRenderer = bgCoverObject.GetComponent<SpriteRenderer>().color;
