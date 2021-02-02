@@ -194,6 +194,7 @@ public class PassengerController: MonoBehaviour
 
             freedPassengerSeats.RemoveAt(0);
             draggedPassenger.transform.SetParent(metroController.metro.transform);
+            draggedPassenger.tag = Tags.Passenger;
         }
 
         if (originalPassenger != null)

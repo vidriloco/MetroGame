@@ -22,6 +22,11 @@ TagManager:
   - metro
   - debug-object
   - blocked-movement
+  - trajectory-stop
+  - trajectory-disappear
+  - trajectory-appear
+  - debug-object-2
+  - trajectory-approaches
   layers:
   - Default
   - TransparentFX

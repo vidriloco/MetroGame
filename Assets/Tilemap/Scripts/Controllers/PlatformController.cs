@@ -53,7 +53,7 @@ public class PlatformController : MonoBehaviour
         {
             var passengerGameObject = platform.transform.GetChild(idx).gameObject;
             passengerGameObject.GetComponent<SpriteRenderer>().color = color;
-
+            
         }
     }
 

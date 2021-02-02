@@ -54,3 +54,18 @@ public class VehicleFactory
 
     }
 }
+
+public class ManagedVehicle
+{
+    public float nextSpawnTime;
+    public Configurations.Vehicle config;
+    public GameObject gameObject;
+    public int? index = null;
+
+    public ManagedVehicle(float nextSpawnTime, GameObject gameObject, Configurations.Vehicle vehicleConfig)
+    {
+        this.nextSpawnTime = nextSpawnTime;
+        this.gameObject = gameObject;
+        this.config = vehicleConfig;
+    }
+}
