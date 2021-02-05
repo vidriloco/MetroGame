@@ -20,18 +20,32 @@ public class PlatformController : MonoBehaviour
         tilemap = GetComponentInChildren<UnityEngine.Tilemaps.Tilemap>();
         platform = GameObject.FindGameObjectWithTag(Tags.Platform);
 
-        for (int idx = 0; idx < 10; idx++)
+        SpawnPassengers();
+        StartCoroutine(ReSpawnPassengers());
+
+        metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
+    }
+
+    IEnumerator ReSpawnPassengers()
+    {
+        yield return new WaitForSeconds(UnityEngine.Random.Range(5, 15));
+        SpawnPassengers();
+        StartCoroutine(ReSpawnPassengers());
+    }
+
+    private void SpawnPassengers()
+    {
+
+        var passengersCount = UnityEngine.Random.Range(0, 10);
+        for (int idx = 0; idx < passengersCount; idx++)
         {
             var position = RandomPosition();
 
             VisualPassenger visualPassengerClone = GameObject.Instantiate<VisualPassenger>(metroController.visualPassenger, position, Quaternion.Euler(0, 0, 0));
             visualPassengerClone.ConfigureAsPassengerInTrain(false);
             visualPassengerClone.SetParentAndPosition(platform.transform, position);
-
             movingSpots.Add(position);
         }
-
-        metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
     }
 
     private void MetroController_MetroStatusChanged(VehicleStatus status)
@@ -43,6 +57,9 @@ public class PlatformController : MonoBehaviour
                 break;
             case VehicleStatus.WillDepart:
                 MarkPassengersWithColor(Color.white);
+                break;
+            case VehicleStatus.OpenDoors:
+                SpawnPassengers();
                 break;
         }
     }

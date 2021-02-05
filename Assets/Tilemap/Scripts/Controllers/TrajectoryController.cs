@@ -10,7 +10,8 @@ public enum VehicleStatus
     CloseDoors,
     WillDepart,
     IsArriving,
-    Gone
+    Gone,
+    WillArrive
 }
 
 public class TrajectoryController : MonoBehaviour
@@ -94,7 +95,7 @@ public class TrajectoryController : MonoBehaviour
     {
         speed = 0;
         elapsedTime = 0;
-        waitingTime = UnityEngine.Random.Range(10, 18);
+        waitingTime = UnityEngine.Random.Range(15, 25);
         arrivingUniqueNotification = false;
         closingDoorsUniqueNotification = false;
         departingUniqueNotification = false;
@@ -108,6 +109,8 @@ public class TrajectoryController : MonoBehaviour
         Physics.IgnoreCollision(movingVehicle.GetComponent<BoxCollider>(), stopCheckpoint.GetComponent<BoxCollider>());
         Physics.IgnoreCollision(movingVehicle.GetComponent<BoxCollider>(), decelerateCheckpoint.GetComponent<BoxCollider>());
         Physics.IgnoreCollision(movingVehicle.GetComponent<BoxCollider>(), dissapearCheckpoint.GetComponent<BoxCollider>());
+
+        TrajectoryStatusChanged?.Invoke(VehicleStatus.WillArrive);
     }
 
     // Use this for initialization

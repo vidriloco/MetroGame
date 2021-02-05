@@ -169,6 +169,11 @@ public class PassengerController: MonoBehaviour
 
         if (draggedPassenger != null)
         {
+            if (draggedPassenger.transform.childCount > 0)
+            {
+                GameObject.DestroyImmediate(draggedPassenger.transform.GetChild(0).gameObject);
+            }
+
             draggedPassenger.tag = Tags.DiscardObject;
             var randomY = Random.Range(PlatformBounds.min.y, PlatformBounds.max.y);
             LeanTween.move(draggedPassenger, new Vector3(PlatformBounds.max.x, randomY), 1.5f).setDestroyOnComplete(true);
@@ -183,18 +188,19 @@ public class PassengerController: MonoBehaviour
 
         if (draggedPassenger != null)
         {
+            
             var nextPosition = (Vector3) freedPassengerSeats[0];
             LeanTween.move(draggedPassenger, nextPosition, 1f);
             draggedPassenger.GetComponent<SpriteRenderer>().sortingOrder = 1;
 
-            if (draggedPassenger.transform.childCount > 0)
-            {
-                draggedPassenger.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = 2;
-            }
-
             freedPassengerSeats.RemoveAt(0);
             draggedPassenger.transform.SetParent(metroController.metro.transform);
             draggedPassenger.tag = Tags.Passenger;
+
+            if (draggedPassenger.transform.childCount > 0)
+            {
+                GameObject.DestroyImmediate(draggedPassenger.transform.GetChild(0).gameObject);
+            }
         }
 
         if (originalPassenger != null)
