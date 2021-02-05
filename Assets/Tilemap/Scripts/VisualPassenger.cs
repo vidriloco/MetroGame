@@ -63,7 +63,7 @@ public class VisualPassenger : MonoBehaviour
             if (stationGameObject != null)
             {
                 stationGameObject.transform.parent = passengerGameObject.transform;
-                stationGameObject.transform.position = position + new Vector3(0, 2, 0);
+                stationGameObject.transform.position = position + new Vector3(0, 3.5f, 0);
             }
         }
     }

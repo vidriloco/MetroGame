@@ -16,6 +16,8 @@ public class ResourceManager : MonoBehaviour
 
         [SerializeField] private Sprite[] passengers;
         [SerializeField] private Sprite[] stations;
+        [SerializeField] private Sprite[] selectedStations;
+
 
         public Sprite randomPassenger()
         {
