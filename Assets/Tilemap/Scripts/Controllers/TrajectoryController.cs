@@ -75,20 +75,7 @@ public class TrajectoryController : MonoBehaviour
 
     private FloatingTilemapVisual BuildRandomPassengersLayout()
     {
-        Grid<PassengerSeat> grid;
-
-        int rangeIndex = UnityEngine.Random.Range(0, 2);
-
-        switch (rangeIndex)
-        {
-            case 0:
-                grid = new Grid<PassengerSeat>(4, UnityEngine.Random.Range(5, 8), 7, defaultOrigin, gridDelegate);
-                break;
-            default:
-                grid = new Grid<PassengerSeat>(3, UnityEngine.Random.Range(5, 8), 9, defaultOrigin, gridDelegate);
-                break;
-        }
-
+        Grid<PassengerSeat> grid = new Grid<PassengerSeat>(3, UnityEngine.Random.Range(5, 8), 9, defaultOrigin, gridDelegate);
         return new FloatingTilemapVisual(grid, visualPassenger, visualStation);
     }
 
