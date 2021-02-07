@@ -10,6 +10,8 @@ public class PassengerController: MonoBehaviour
     private GameObject originalPassenger = null;
     private GameObject draggedPassenger = null;
 
+    private Station selectedPassengerStation;
+
     [SerializeField] private MetroController metroController;
     [SerializeField] private PlatformController platformController;
 
@@ -103,6 +105,7 @@ public class PassengerController: MonoBehaviour
 
     private void OnPassengerDropped()
     {
+
         if (draggedPassenger == null) { return; }
 
         var passengerCollider = draggedPassenger.GetComponent<BoxCollider2D>();
@@ -113,9 +116,13 @@ public class PassengerController: MonoBehaviour
             return;
         }
 
-        if(DraggingPlatformPassenger)
+
+
+        if (DraggingPlatformPassenger)
         {
-            if(DroppingOverMetroBounds)
+            Debug.Log(0);
+
+            if (DroppingOverMetroBounds)
             {
                 if (metroStatus == VehicleStatus.OpenDoors && freedPassengerSeats.Count > 0)
                 {
@@ -137,6 +144,8 @@ public class PassengerController: MonoBehaviour
         }
         else if(DraggingMetroPassenger)
         {
+            Debug.Log(-1);
+
             if (DroppingOverPlatformBounds)
             {
                 if (metroStatus == VehicleStatus.OpenDoors)
@@ -177,9 +186,12 @@ public class PassengerController: MonoBehaviour
             draggedPassenger.tag = Tags.DiscardObject;
             var randomY = Random.Range(PlatformBounds.min.y, PlatformBounds.max.y);
             LeanTween.move(draggedPassenger, new Vector3(PlatformBounds.max.x, randomY), 1.5f).setDestroyOnComplete(true);
-        }
 
-        UpdateCoinStats();
+            var station = platformController.CurrentStation();
+
+            var score = selectedPassengerStation.identifier == station.identifier ? 2 : -2;
+            UpdateCoinStatsWith(score);
+        }
     }
 
     private void InboardChoosenPassenger()
@@ -188,7 +200,6 @@ public class PassengerController: MonoBehaviour
 
         if (draggedPassenger != null)
         {
-            
             var nextPosition = (Vector3) freedPassengerSeats[0];
             LeanTween.move(draggedPassenger, nextPosition, 1f);
             draggedPassenger.GetComponent<SpriteRenderer>().sortingOrder = 1;
@@ -201,25 +212,39 @@ public class PassengerController: MonoBehaviour
             {
                 GameObject.DestroyImmediate(draggedPassenger.transform.GetChild(0).gameObject);
             }
+
+            var passenger = draggedPassenger.GetComponentInParent<VisualPassenger>();
+
+            // Change for metro's
+            var station = platformController.CurrentStation();
+
+            var score = selectedPassengerStation.identifier == station.identifier ? 2 : -2;
+            UpdateCoinStatsWith(score);
+
+            draggedPassenger = null;
         }
 
         if (originalPassenger != null)
         {
             LeanTween.alpha(originalPassenger, 0f, 1).setDestroyOnComplete(true);
         }
-
-        draggedPassenger = null;
-
-        UpdateCoinStats();
     }
 
-    private void UpdateCoinStats()
+    private void UpdateCoinStatsWith(int stats)
     {
-        StatsManager.NewPassengerDelivered();
+        StatsManager.PassengerMoved(stats);
         Text coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<Text>();
         var coins = StatsManager.shared.coins.ToString();
         coinsCounterText.text = coins;
-        CMDebug.TextPopupMouse("+ 2");
+
+        if(stats > 0)
+        {
+            CMDebug.TextPopupMouse("+ " + stats);
+        }
+        else
+        {
+            CMDebug.TextPopupMouse("" + stats);
+        }
 
         var coinIcon = GameObject.FindGameObjectWithTag(Tags.CoinsIcon);
 
@@ -245,6 +270,8 @@ public class PassengerController: MonoBehaviour
 
         if (hit.collider == null) { return; }
 
+        UnpackSelectedPassengerStation(hit.collider.gameObject);
+
         var spriteCombo = FetchPassengerSprite(hit.collider.gameObject);
         if (spriteCombo != null)
         {
@@ -268,5 +295,20 @@ public class PassengerController: MonoBehaviour
         }
 
         return null;
+    }
+
+    private void UnpackSelectedPassengerStation(GameObject gameObject)
+    {
+        var visualPassenger = gameObject.GetComponent<VisualPassenger>();
+        if (visualPassenger != null)
+        {
+            var visualStation = visualPassenger.GetComponentInChildren<VisualStation>();
+
+            if(visualStation != null)
+            {
+                selectedPassengerStation = visualStation.GetStation();
+            }
+        }
+
     }
 }

@@ -12,9 +12,9 @@ public class StatsManager
 {
     public static StatsModel shared = new StatsModel();
 
-    public static void NewPassengerDelivered()
+    public static void PassengerMoved(int number)
     {
-        shared.coins += 2;
+        shared.coins += number;
     }
 
     public static void NewPassengerOnBoard()

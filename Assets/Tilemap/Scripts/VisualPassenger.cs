@@ -3,68 +3,56 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Area
+{
+    Platform, Train
+}
+
+public struct Passenger
+{
+    public string identifier;
+    public Sprite image;
+}
+
 public class VisualPassenger : MonoBehaviour
 {
 
-    [SerializeField] public GameObject genericSpriteReference;
+    private SpriteRenderer spriteRenderer;
+    private Passenger associatedPassenger;
 
-    private GameObject passengerGameObject;
-    private GameObject stationGameObject;
-
-    private bool shouldShowStation;
-
-    private ResourceManager resourceManager;
-
-    public void ConfigureAsPassengerInTrain(bool inTrain)
+    public static VisualPassenger SpawnWith(VisualPassenger prefab, GameObject parentObject, Vector3 position, Passenger passenger, Area area)
     {
-        passengerGameObject.tag = inTrain ? Tags.Passenger : Tags.PassengerInPlatform;
+        var visualPassenger = (VisualPassenger)GameObject.Instantiate(prefab, position, Quaternion.Euler(0, 0, 0));
+        visualPassenger.transform.parent = parentObject.transform;
+        visualPassenger.transform.position = position;
+        visualPassenger.SetArea(area);
+        visualPassenger.SetPassenger(passenger);
+        return visualPassenger;
+    }
 
-        if(!inTrain)
+    public void SetArea(Area area)
+    {
+        switch(area)
         {
-            passengerGameObject.GetComponent<SpriteRenderer>().sortingOrder = 4;
-        }
-
-        if (shouldShowStation)
-        {
-            stationGameObject.tag = inTrain ? Tags.Station : Tags.StationInPlatform;
-
-            if (!inTrain)
-            {
-                stationGameObject.GetComponent<SpriteRenderer>().sortingOrder = 5;
-            }
+            case Area.Train:
+                this.tag = Tags.Passenger;
+                this.spriteRenderer.sortingOrder = 1;
+                break;
+            case Area.Platform:
+                this.tag = Tags.PassengerInPlatform;
+                this.spriteRenderer.sortingOrder = 4;
+                break;
         }
     }
 
     public void Awake()
     {
-        shouldShowStation = UnityEngine.Random.Range(0, 3) == 1;
-        resourceManager = GameObject.FindObjectOfType<ResourceManager>();
-
-        passengerGameObject = Instantiate(genericSpriteReference, transform.position, Quaternion.identity);
-        passengerGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomPassenger();
-        passengerGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
-
-        if (shouldShowStation)
-        {
-            stationGameObject = Instantiate(genericSpriteReference, transform.position, Quaternion.identity);
-
-            stationGameObject.GetComponent<SpriteRenderer>().sprite = resourceManager.knownImages.randomStation();
-            stationGameObject.GetComponent<SpriteRenderer>().sortingOrder = 2;
-        }
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void SetParentAndPosition(Transform transform, Vector3 position)
+    public void SetPassenger(Passenger passenger)
     {
-        if(passengerGameObject != null)
-        {
-            passengerGameObject.transform.parent = transform;
-            passengerGameObject.transform.position = position;
-
-            if (stationGameObject != null)
-            {
-                stationGameObject.transform.parent = passengerGameObject.transform;
-                stationGameObject.transform.position = position + new Vector3(0, 3.5f, 0);
-            }
-        }
+        this.associatedPassenger = passenger;
+        spriteRenderer.sprite = passenger.image;
     }
 }

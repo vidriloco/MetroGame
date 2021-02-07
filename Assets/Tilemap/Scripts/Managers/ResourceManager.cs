@@ -15,18 +15,25 @@ public class ResourceManager : MonoBehaviour
         [SerializeField] public GameObject carCover;
 
         [SerializeField] private Sprite[] passengers;
-        [SerializeField] private Sprite[] stations;
+        [SerializeField] private Station[] stations;
         [SerializeField] private Sprite[] selectedStations;
 
 
-        public Sprite randomPassenger()
+        public Station GetStationAt(int index)
+        {
+            return stations[index];
+        }
+
+        public Passenger randomPassenger()
         {
             var passengersCount = passengers.Length;
             var randomNumber =  Random.RandomRange(0, passengersCount);
-            return passengers[randomNumber];
+            var passenger = new Passenger();
+            passenger.image = passengers[randomNumber];
+            return passenger;
         }
 
-        public Sprite randomStation()
+        public Station randomStation()
         {
             var stationsCount = stations.Length;
             var randomNumber = Random.RandomRange(0, stationsCount);

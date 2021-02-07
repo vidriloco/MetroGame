@@ -15,15 +15,22 @@ public class PlatformController : MonoBehaviour
     private readonly float startWaitTime;
     private readonly float offset = 10;
 
+    private Station currentStation;
+    private ResourceManager resourceManager;
+
     private void Start()
     {
+        resourceManager = GameObject.FindObjectOfType<ResourceManager>();
+
         tilemap = GetComponentInChildren<UnityEngine.Tilemaps.Tilemap>();
         platform = GameObject.FindGameObjectWithTag(Tags.Platform);
+        currentStation = resourceManager.knownImages.GetStationAt(4);
 
         SpawnPassengers();
         StartCoroutine(ReSpawnPassengers());
 
         metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
+
     }
 
     IEnumerator ReSpawnPassengers()
@@ -31,6 +38,11 @@ public class PlatformController : MonoBehaviour
         yield return new WaitForSeconds(UnityEngine.Random.Range(5, 15));
         SpawnPassengers();
         StartCoroutine(ReSpawnPassengers());
+    }
+
+    public Station CurrentStation()
+    {
+        return currentStation;
     }
 
     private void SpawnPassengers()
@@ -41,9 +53,9 @@ public class PlatformController : MonoBehaviour
         {
             var position = RandomPosition();
 
-            VisualPassenger visualPassengerClone = GameObject.Instantiate<VisualPassenger>(metroController.visualPassenger, position, Quaternion.Euler(0, 0, 0));
-            visualPassengerClone.ConfigureAsPassengerInTrain(false);
-            visualPassengerClone.SetParentAndPosition(platform.transform, position);
+            var passengerData = resourceManager.knownImages.randomPassenger();
+            var passenger = VisualPassenger.SpawnWith(metroController.visualPassenger, platform, position, passengerData, Area.Platform);
+
             movingSpots.Add(position);
         }
     }
@@ -69,8 +81,12 @@ public class PlatformController : MonoBehaviour
         for (var idx = 0; idx < platform.transform.childCount; idx++)
         {
             var passengerGameObject = platform.transform.GetChild(idx).gameObject;
-            passengerGameObject.GetComponent<SpriteRenderer>().color = color;
-            
+            var spriteRenderer = passengerGameObject.GetComponent<SpriteRenderer>();
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = color;
+            }
         }
     }
 

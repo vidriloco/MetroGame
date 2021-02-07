@@ -17,6 +17,7 @@ public enum VehicleStatus
 public class TrajectoryController : MonoBehaviour
 {
     [SerializeField] public VisualPassenger visualPassenger;
+    [SerializeField] public VisualStation visualStation;
 
     private GameObject startingCheckpoint;
     private GameObject dissapearCheckpoint;
@@ -88,7 +89,7 @@ public class TrajectoryController : MonoBehaviour
                 break;
         }
 
-        return new FloatingTilemapVisual(grid, visualPassenger);
+        return new FloatingTilemapVisual(grid, visualPassenger, visualStation);
     }
 
     void GenerateVehicle()
