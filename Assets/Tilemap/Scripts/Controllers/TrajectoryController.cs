@@ -16,9 +16,6 @@ public enum VehicleStatus
 
 public class TrajectoryController : MonoBehaviour
 {
-    [SerializeField] public VisualPassenger visualPassenger;
-    [SerializeField] public VisualStation visualStation;
-
     private GameObject startingCheckpoint;
     private GameObject dissapearCheckpoint;
     private GameObject stopCheckpoint;
@@ -76,7 +73,7 @@ public class TrajectoryController : MonoBehaviour
     private FloatingTilemapVisual BuildRandomPassengersLayout()
     {
         Grid<PassengerSeat> grid = new Grid<PassengerSeat>(3, UnityEngine.Random.Range(5, 8), 9, defaultOrigin, gridDelegate);
-        return new FloatingTilemapVisual(grid, visualPassenger, visualStation);
+        return new FloatingTilemapVisual(grid);
     }
 
     void GenerateVehicle()

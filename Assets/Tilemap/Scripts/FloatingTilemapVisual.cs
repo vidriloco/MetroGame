@@ -25,18 +25,14 @@ public class FloatingTilemapVisual
     private readonly GameObject closedCarSprite;
     private readonly GameObject carCoverSprite;
     private readonly ResourceManager resourceManager = GameObject.FindObjectOfType<ResourceManager>();
-    private VisualPassenger visualPassenger;
-    private VisualStation visualStation;
 
-    public FloatingTilemapVisual(Grid<PassengerSeat> grid, VisualPassenger visualPassenger, VisualStation visualStation)
+    public FloatingTilemapVisual(Grid<PassengerSeat> grid)
     {
         this.grid = grid;
 
         this.frontCarSprite = resourceManager.knownImages.frontCar;
         this.closedCarSprite = resourceManager.knownImages.closedCar;
         this.carCoverSprite = resourceManager.knownImages.carCover;
-        this.visualPassenger = visualPassenger;
-        this.visualStation = visualStation;
         this.grid.position = frontCarSprite.transform.position;
     }
 
@@ -76,10 +72,9 @@ public class FloatingTilemapVisual
             {
                 Vector3 position = grid.GetWorldPosition(x, y);
                 var passengerData = resourceManager.knownImages.randomPassenger();
-                var passenger = VisualPassenger.SpawnWith(visualPassenger, passengerHolder, position, passengerData, Area.Train);
-
                 var stationData = resourceManager.knownImages.randomStation();
-                VisualStation.SpawnWith(visualStation, passenger.gameObject, position, stationData, Area.Train, new Vector3(0, 3));
+
+                PassengerGenerator.Instance.GenerateWith(position, passengerData, passengerHolder, Area.Train, stationData);
             }
         }
 

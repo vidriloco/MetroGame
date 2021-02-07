@@ -16,8 +16,6 @@ public class MetroController : MonoBehaviour {
         }
     }
 
-    [SerializeField] public VisualPassenger visualPassenger;
-
     public event MetroStatusChangedHandler MetroStatusChanged;
 
     public TrajectoryController trajectoryController;
