@@ -6,6 +6,10 @@ public class PlatformController : MonoBehaviour
 {
 
     [SerializeField] public MetroController metroController;
+
+    [SerializeField] public VisualPassenger visualPassenger;
+    [SerializeField] public VisualStation visualStation;
+
     private UnityEngine.Tilemaps.Tilemap tilemap;
     private ArrayList movingSpots = new ArrayList();
     private GameObject platform;
@@ -54,7 +58,10 @@ public class PlatformController : MonoBehaviour
             var position = RandomPosition();
 
             var passengerData = resourceManager.knownImages.randomPassenger();
-            var passenger = VisualPassenger.SpawnWith(metroController.visualPassenger, platform, position, passengerData, Area.Platform);
+            var passenger = VisualPassenger.SpawnWith(visualPassenger, platform, position, passengerData, Area.Platform);
+
+            var stationData = resourceManager.knownImages.randomStation();
+            VisualStation.SpawnWith(visualStation, passenger.gameObject, position, stationData, Area.Platform, new Vector3(0, 3));
 
             movingSpots.Add(position);
         }
