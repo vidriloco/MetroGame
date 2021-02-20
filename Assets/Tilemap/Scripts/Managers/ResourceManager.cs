@@ -13,6 +13,8 @@ public class ResourceManager : MonoBehaviour
         [SerializeField] public GameObject frontCar;
         [SerializeField] public GameObject closedCar;
         [SerializeField] public GameObject carCover;
+        [SerializeField] public GameObject boundText;
+        [SerializeField] public GameObject stationNameText;
 
         [SerializeField] private Sprite[] passengers;
         [SerializeField] private Station[] stations;

@@ -27,6 +27,10 @@ TagManager:
   - trajectory-appear
   - debug-object-2
   - trajectory-approaches
+  - metro-bound-signal
+  - current-station-icon
+  - current-station-title-label
+  - current-station-name-label
   layers:
   - Default
   - TransparentFX

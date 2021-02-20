@@ -26,7 +26,7 @@ public class TrajectoryController : MonoBehaviour
     private float waitingTime;
     private float elapsedTime = 0;
 
-    private float time = 300;
+    private float time = 400;
     private float speed = 0;
 
     private bool shouldDepart = false;
@@ -175,7 +175,7 @@ public class TrajectoryController : MonoBehaviour
 
     IEnumerator ReGenerateVehicle()
     {
-        yield return new WaitForSeconds(UnityEngine.Random.Range(7, 15));
+        yield return new WaitForSeconds(UnityEngine.Random.Range(3, 5));
         GenerateVehicle();
     }
 }

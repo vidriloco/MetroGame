@@ -8,6 +8,7 @@ public struct Tags
 
     public static string Metro = "metro";
     public static string MetroCover = "metro-cover";
+    public static string MetroBoundSignal = "metro-bound-signal";
     public static string MetroCar = "metro-car";
 
     public static string Station = "station";
@@ -27,4 +28,9 @@ public struct Tags
     public static string ExpCounter = "experience-counter";
 
     public static string BlockedMovement = "blocked-movement";
+
+    public static string CurrentStationIcon = "current-station-icon";
+    public static string CurrentStationTitleLabel = "current-station-title-label";
+    public static string CurrentStationNameLabel = "current-station-name-label";
+
 }

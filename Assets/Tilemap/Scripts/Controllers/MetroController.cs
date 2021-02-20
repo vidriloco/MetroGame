@@ -84,6 +84,7 @@ public class MetroController : MonoBehaviour {
                 cover.tag = Tags.DiscardObject;
             });
         }).setOnCompleteOnRepeat(false);
+
     }
 
     private void MetroWillOpenDoors()

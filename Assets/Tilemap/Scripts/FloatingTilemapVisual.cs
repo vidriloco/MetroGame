@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public struct PassengerSeat
 {
@@ -24,6 +25,9 @@ public class FloatingTilemapVisual
     private readonly GameObject frontCarSprite;
     private readonly GameObject closedCarSprite;
     private readonly GameObject carCoverSprite;
+    private readonly GameObject boundObject;
+    private readonly GameObject stationNameObject;
+
     private readonly ResourceManager resourceManager = GameObject.FindObjectOfType<ResourceManager>();
 
     public FloatingTilemapVisual(Grid<PassengerSeat> grid)
@@ -33,6 +37,9 @@ public class FloatingTilemapVisual
         this.frontCarSprite = resourceManager.knownImages.frontCar;
         this.closedCarSprite = resourceManager.knownImages.closedCar;
         this.carCoverSprite = resourceManager.knownImages.carCover;
+        this.boundObject = resourceManager.knownImages.boundText;
+        this.stationNameObject = resourceManager.knownImages.stationNameText;
+
         this.grid.position = frontCarSprite.transform.position;
     }
 
@@ -107,8 +114,50 @@ public class FloatingTilemapVisual
 
         // Let it be hidden initially
         Color bgCoverObjectSpriteRenderer = bgCoverObject.GetComponent<SpriteRenderer>().color;
-        bgCoverObjectSpriteRenderer.a = 0;
+        //bgCoverObjectSpriteRenderer.a = 0;
         bgCoverObject.GetComponent<SpriteRenderer>().color = bgCoverObjectSpriteRenderer;
+    }
+
+    private void GenerateTextSignalWithText(string boundToText,  GameObject trainObject)
+    {
+        var station = resourceManager.knownImages.GetStationAt(0);
+
+        var boundObjectClone = GameObject.Instantiate(boundObject);
+
+        var stationNameObjectClone = GameObject.Instantiate(stationNameObject);
+
+        var boundObjectrenderer = boundObjectClone.GetComponent<MeshRenderer>();
+        boundObjectrenderer.sortingOrder = 4;
+
+        var stationNameObjectRenderer = stationNameObjectClone.GetComponent<MeshRenderer>();
+        stationNameObjectRenderer.sortingOrder = 4;
+
+        var containerCenter = trainObject.transform.GetComponent<SpriteRenderer>().bounds.center;
+        var verticalCenter = containerCenter.y + boundObjectrenderer.bounds.size.y;
+
+        var signalObject = new GameObject();
+        signalObject.tag = Tags.MetroBoundSignal;
+
+        var boundToLabel = boundObjectClone.GetComponent<TMPro.TextMeshPro>();
+        boundToLabel.text = boundToText;
+        boundToLabel.transform.SetParent(signalObject.transform);
+
+        var destinationToLabel = stationNameObjectClone.GetComponent<TMPro.TextMeshPro>();
+        destinationToLabel.text = station.name;
+        destinationToLabel.transform.SetParent(signalObject.transform);
+
+        var image = GameObject.Instantiate(GameObject.FindGameObjectWithTag("debug-object-2"));
+        
+        image.GetComponent<SpriteRenderer>().sprite = station.bigIcon;
+
+        image.transform.SetParent(signalObject.transform);
+        image.GetComponent<SpriteRenderer>().sortingOrder = 4;
+
+        image.transform.position = new Vector3(containerCenter.x / 2 + image.GetComponent<SpriteRenderer>().bounds.size.x / 2, verticalCenter + 13);
+        boundToLabel.transform.position = new Vector3(image.transform.position.x, verticalCenter);
+        destinationToLabel.transform.position = new Vector3(image.transform.position.x, verticalCenter - 5);
+
+        signalObject.transform.SetParent(trainObject.transform);
     }
 
 }

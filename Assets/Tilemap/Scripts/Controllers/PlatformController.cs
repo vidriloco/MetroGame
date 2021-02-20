@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlatformController : MonoBehaviour
 {
@@ -25,7 +26,13 @@ public class PlatformController : MonoBehaviour
 
         tilemap = GetComponentInChildren<UnityEngine.Tilemaps.Tilemap>();
         platform = GameObject.FindGameObjectWithTag(Tags.Platform);
-        currentStation = resourceManager.knownImages.GetStationAt(4);
+        currentStation = resourceManager.knownImages.randomStation();
+
+        // TODO: Move out the import UI
+        var stationImage = GameObject.FindGameObjectWithTag(Tags.CurrentStationIcon).GetComponent<Image>();
+        stationImage.sprite = currentStation.bigIcon;
+        var stationNameLabel = GameObject.FindGameObjectWithTag(Tags.CurrentStationNameLabel).GetComponent<TMPro.TextMeshProUGUI>();
+        stationNameLabel.text = currentStation.name;
 
         SpawnPassengers();
         StartCoroutine(ReSpawnPassengers());
@@ -49,7 +56,7 @@ public class PlatformController : MonoBehaviour
     private void SpawnPassengers()
     {
 
-        var passengersCount = UnityEngine.Random.Range(0, 10);
+        var passengersCount = UnityEngine.Random.Range(0, 5);
         for (int idx = 0; idx < passengersCount; idx++)
         {
             var position = RandomPosition();

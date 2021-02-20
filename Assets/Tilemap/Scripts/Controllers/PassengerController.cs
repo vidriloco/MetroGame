@@ -217,7 +217,6 @@ public class PassengerController: MonoBehaviour
 
             // Change for metro's
             var station = platformController.CurrentStation();
-
             var score = selectedPassengerStation.identifier == station.identifier ? 2 : -2;
             UpdateCoinStatsWith(score);
 
@@ -233,7 +232,7 @@ public class PassengerController: MonoBehaviour
     private void UpdateCoinStatsWith(int stats)
     {
         StatsManager.PassengerMoved(stats);
-        Text coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<Text>();
+        var coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<TMPro.TextMeshProUGUI>();
         var coins = StatsManager.shared.coins.ToString();
         coinsCounterText.text = coins;
 
