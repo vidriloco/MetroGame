@@ -27,7 +27,7 @@ public class PassengerGenerator : MonoBehaviour
     {
         var passenger = VisualPassenger.SpawnWith(visualPassenger, parent, position, passengerData, area);
 
-        if (stationData != null && Random.RandomRange(1, 10) % 2 == 1)
+        if (stationData != null && Random.Range(1, 10) % 2 == 1)
         {
             VisualStation.SpawnWith(visualStation, passenger.gameObject, position, stationData.GetValueOrDefault(), area, new Vector3(0, 3));
         }

@@ -71,7 +71,7 @@ public class GameManager
             }
         }
 
-        Debug.Log("Other case");
+        //Debug.Log("Other case");
         return selectedStation.identifier == boundStation.identifier ? 2 : -2;
     }
 

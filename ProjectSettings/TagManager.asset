@@ -31,6 +31,9 @@ TagManager:
   - current-station-icon
   - current-station-title-label
   - current-station-name-label
+  - bound-station-icon
+  - bound-station-title-label
+  - bound-station-name-label
   layers:
   - Default
   - TransparentFX

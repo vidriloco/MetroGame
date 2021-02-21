@@ -43,12 +43,11 @@ public class MetroController : MonoBehaviour {
                 MetroIsArriving();
                 break;
             case VehicleStatus.Gone:
-                MetroIsGone();
                 break;
         }
     }
 
-    private void MetroIsGone()
+    private void DetachPassengers()
     {
         GameObject[] passengers = GameObject.FindGameObjectsWithTag(Tags.Passenger);
         foreach (var passenger in passengers)
@@ -82,6 +81,7 @@ public class MetroController : MonoBehaviour {
         {
             LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
                 cover.tag = Tags.DiscardObject;
+                DetachPassengers();
             });
         }).setOnCompleteOnRepeat(false);
 

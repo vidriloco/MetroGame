@@ -26,7 +26,7 @@ public class UIController : MonoBehaviour
         
     }
 
-    public void UpdateCoinStats(int stats)
+    public void UpdateCoinStats(int stats, Vector2 position)
     {
         GameManager.manager.stats.PassengerMoved(stats);
         var coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<TMPro.TextMeshProUGUI>();
@@ -35,11 +35,11 @@ public class UIController : MonoBehaviour
 
         if (stats > 0)
         {
-            CMDebug.TextPopupMouse("+ " + stats);
+            CMDebug.TextPopup("+ " + stats, position, Color.yellow);
         }
         else
         {
-            CMDebug.TextPopupMouse("" + stats);
+            CMDebug.TextPopup("" + stats, position, Color.yellow);
         }
 
         var coinIcon = GameObject.FindGameObjectWithTag(Tags.CoinsIcon);

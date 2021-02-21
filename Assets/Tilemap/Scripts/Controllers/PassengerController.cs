@@ -87,7 +87,8 @@ public class PassengerController: MonoBehaviour
 
     private void ReturnPassenger()
     {
-        LeanTween.moveLocal(draggedPassenger, originalPassenger.transform.position, 0.5f).setDestroyOnComplete(true).setOnComplete(() => {
+        
+        LeanTween.moveLocal(draggedPassenger, originalPassenger.transform.position, 0.5f).setOnComplete(() => {
             if(originalPassenger != null)
             {
                 LeanTween.alpha(originalPassenger, 1f, 1);
@@ -98,12 +99,15 @@ public class PassengerController: MonoBehaviour
         });
     }
 
-    private void FreePassenger()
+    private void ReleasePassenger()
     {
+        if (draggedPassenger == null || originalPassenger == null) { return; }
+
         originalPassenger.transform.position = draggedPassenger.transform.position;
         LeanTween.alpha(originalPassenger, 1, 1);
         GameObject.DestroyImmediate(draggedPassenger);
         draggedPassenger = null;
+        originalPassenger = null;
     }
 
     private void OnPassengerDropped()
@@ -112,21 +116,19 @@ public class PassengerController: MonoBehaviour
         if (draggedPassenger == null) { return; }
 
         var passengerCollider = draggedPassenger.GetComponent<BoxCollider2D>();
-        
+
+        // Leave out passengers (off)boarding out of time
         if(draggedPassenger.CompareTag(Tags.PassengerTrapped))
         {
             ReturnPassenger();
             return;
         }
 
-
-
         if (DraggingPlatformPassenger)
         {
-            Debug.Log(0);
-
             if (DroppingOverMetroBounds)
             {
+                // Allow passengers to be dropped inside when doors are still open and spaces free
                 if (metroStatus == VehicleStatus.OpenDoors && freedPassengerSeats.Count > 0)
                 {
                     passengerCollider.tag = Tags.Passenger;
@@ -138,7 +140,7 @@ public class PassengerController: MonoBehaviour
                 
             } else if(DroppingOverPlatformBounds)
             {
-                FreePassenger();
+                ReleasePassenger();
             } else
             {
                 ReturnPassenger();
@@ -189,36 +191,35 @@ public class PassengerController: MonoBehaviour
             LeanTween.move(draggedPassenger, new Vector3(PlatformBounds.max.x, randomY), 1.5f).setDestroyOnComplete(true);
 
             var score = GameManager.manager.SetResourcesObject(resourceManager).GetScoreForOffboardingAtStation(selectedPassengerStation);
-            uiController.UpdateCoinStats(score);
+            uiController.UpdateCoinStats(score, draggedPassenger.transform.position);
         }
     }
 
     private void InboardChoosenPassenger()
     {
-        GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
-
         if (draggedPassenger != null)
         {
             var nextPosition = (Vector3)freedPassengerSeats[0];
-            LeanTween.move(draggedPassenger, nextPosition, 1f);
-            draggedPassenger.GetComponent<SpriteRenderer>().sortingOrder = 1;
-
             freedPassengerSeats.RemoveAt(0);
-            draggedPassenger.transform.SetParent(metroController.metro.transform);
-            draggedPassenger.tag = Tags.Passenger;
 
-            if (draggedPassenger.transform.childCount > 0)
+            LeanTween.moveLocal(draggedPassenger, nextPosition, 0.5f).setOnComplete(() =>
             {
-                GameObject.DestroyImmediate(draggedPassenger.transform.GetChild(0).gameObject);
-            }
+                draggedPassenger.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                draggedPassenger.transform.SetParent(metroController.metro.transform);
+                draggedPassenger.tag = Tags.Passenger;
 
-            //var passenger = draggedPassenger.GetComponentInParent<VisualPassenger>();
+                if (draggedPassenger.transform.childCount > 0)
+                {
+                    GameObject.DestroyImmediate(draggedPassenger.transform.GetChild(0).gameObject);
+                }
 
-            // Change for metro'sx
-            var score = GameManager.manager.SetResourcesObject(resourceManager).GetScoreForBoardingWithStation(selectedPassengerStation);
-            uiController.UpdateCoinStats(score);
+                var score = GameManager.manager.SetResourcesObject(resourceManager).GetScoreForBoardingWithStation(selectedPassengerStation);
+                uiController.UpdateCoinStats(score, draggedPassenger.transform.position);
 
-            draggedPassenger = null;
+                GameObject.FindObjectOfType<SoundManager>().PlayRandomHumanSound();
+
+                draggedPassenger = null;
+            });
         }
 
         if (originalPassenger != null)
@@ -237,8 +238,9 @@ public class PassengerController: MonoBehaviour
 
     private void OnPassengerSelected()
     {
+
         Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
-        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, -Vector2.up);
+        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 
         if (hit.collider == null) { return; }
 
