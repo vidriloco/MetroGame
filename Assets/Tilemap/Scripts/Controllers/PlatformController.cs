@@ -50,7 +50,7 @@ public class PlatformController : MonoBehaviour
         {
             var position = RandomPosition();
 
-            var passengerData = resourceManager.knownImages.randomPassenger();
+            var passengerData = resourceManager.knownImages.GetRandomPassenger();
             var stationData = resourceManager.knownImages.GetRandomStation();
 
             PassengerGenerator.Instance.GenerateWith(position, passengerData, platform, Area.Platform, stationData);

@@ -188,9 +188,7 @@ public class PassengerController: MonoBehaviour
             var randomY = Random.Range(PlatformBounds.min.y, PlatformBounds.max.y);
             LeanTween.move(draggedPassenger, new Vector3(PlatformBounds.max.x, randomY), 1.5f).setDestroyOnComplete(true);
 
-            var boundStation = GameManager.manager.SetResourcesObject(resourceManager).currentStation;
-
-            var score = selectedPassengerStation.identifier == boundStation.identifier ? 2 : -2;
+            var score = GameManager.manager.SetResourcesObject(resourceManager).GetScoreForOffboardingAtStation(selectedPassengerStation);
             uiController.UpdateCoinStats(score);
         }
     }
@@ -216,9 +214,8 @@ public class PassengerController: MonoBehaviour
 
             //var passenger = draggedPassenger.GetComponentInParent<VisualPassenger>();
 
-            // Change for metro's
-            var boundStation = GameManager.manager.SetResourcesObject(resourceManager).boundStation;
-            var score = selectedPassengerStation.identifier == boundStation.identifier ? 2 : -2;
+            // Change for metro'sx
+            var score = GameManager.manager.SetResourcesObject(resourceManager).GetScoreForBoardingWithStation(selectedPassengerStation);
             uiController.UpdateCoinStats(score);
 
             draggedPassenger = null;

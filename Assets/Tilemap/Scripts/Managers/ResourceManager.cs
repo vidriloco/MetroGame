@@ -20,13 +20,17 @@ public class ResourceManager : MonoBehaviour
         [SerializeField] private Station[] stations;
         [SerializeField] private Sprite[] selectedStations;
 
+        public Station[] GetStations()
+        {
+            return stations;
+        }
 
         public Station GetStationAt(int index)
         {
             return stations[index];
         }
 
-        public Passenger randomPassenger()
+        public Passenger GetRandomPassenger()
         {
             var passengersCount = passengers.Length;
             var randomNumber =  Random.Range(0, passengersCount);

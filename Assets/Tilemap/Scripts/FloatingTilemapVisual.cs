@@ -78,7 +78,7 @@ public class FloatingTilemapVisual
             for (int y = 0; y < grid.GetHeight(); y++)
             {
                 Vector3 position = grid.GetWorldPosition(x, y);
-                var passengerData = resourceManager.knownImages.randomPassenger();
+                var passengerData = resourceManager.knownImages.GetRandomPassenger();
                 var stationData = resourceManager.knownImages.GetRandomStation();
 
                 PassengerGenerator.Instance.GenerateWith(position, passengerData, passengerHolder, Area.Train, stationData);
