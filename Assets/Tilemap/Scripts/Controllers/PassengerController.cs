@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CodeMonkey;
 using CodeMonkey.Utils;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PassengerController: MonoBehaviour
 {
@@ -14,6 +13,7 @@ public class PassengerController: MonoBehaviour
 
     [SerializeField] private MetroController metroController;
     [SerializeField] private PlatformController platformController;
+    [SerializeField] private UIController uiController;
 
     private VehicleStatus metroStatus;
 
@@ -53,9 +53,12 @@ public class PassengerController: MonoBehaviour
 
     private ArrayList freedPassengerSeats = new ArrayList();
 
+    private ResourceManager resourceManager;
+
     private void Start()
     {
         metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
+        resourceManager = GameObject.FindObjectOfType<ResourceManager>();
     }
 
     private void MetroController_MetroStatusChanged(VehicleStatus status)
@@ -144,8 +147,6 @@ public class PassengerController: MonoBehaviour
         }
         else if(DraggingMetroPassenger)
         {
-            Debug.Log(-1);
-
             if (DroppingOverPlatformBounds)
             {
                 if (metroStatus == VehicleStatus.OpenDoors)
@@ -187,10 +188,10 @@ public class PassengerController: MonoBehaviour
             var randomY = Random.Range(PlatformBounds.min.y, PlatformBounds.max.y);
             LeanTween.move(draggedPassenger, new Vector3(PlatformBounds.max.x, randomY), 1.5f).setDestroyOnComplete(true);
 
-            var station = platformController.CurrentStation();
+            var boundStation = GameManager.manager.SetResourcesObject(resourceManager).currentStation;
 
-            var score = selectedPassengerStation.identifier == station.identifier ? 2 : -2;
-            UpdateCoinStatsWith(score);
+            var score = selectedPassengerStation.identifier == boundStation.identifier ? 2 : -2;
+            uiController.UpdateCoinStats(score);
         }
     }
 
@@ -200,7 +201,7 @@ public class PassengerController: MonoBehaviour
 
         if (draggedPassenger != null)
         {
-            var nextPosition = (Vector3) freedPassengerSeats[0];
+            var nextPosition = (Vector3)freedPassengerSeats[0];
             LeanTween.move(draggedPassenger, nextPosition, 1f);
             draggedPassenger.GetComponent<SpriteRenderer>().sortingOrder = 1;
 
@@ -213,12 +214,12 @@ public class PassengerController: MonoBehaviour
                 GameObject.DestroyImmediate(draggedPassenger.transform.GetChild(0).gameObject);
             }
 
-            var passenger = draggedPassenger.GetComponentInParent<VisualPassenger>();
+            //var passenger = draggedPassenger.GetComponentInParent<VisualPassenger>();
 
             // Change for metro's
-            var station = platformController.CurrentStation();
-            var score = selectedPassengerStation.identifier == station.identifier ? 2 : -2;
-            UpdateCoinStatsWith(score);
+            var boundStation = GameManager.manager.SetResourcesObject(resourceManager).boundStation;
+            var score = selectedPassengerStation.identifier == boundStation.identifier ? 2 : -2;
+            uiController.UpdateCoinStats(score);
 
             draggedPassenger = null;
         }
@@ -227,31 +228,6 @@ public class PassengerController: MonoBehaviour
         {
             LeanTween.alpha(originalPassenger, 0f, 1).setDestroyOnComplete(true);
         }
-    }
-
-    private void UpdateCoinStatsWith(int stats)
-    {
-        StatsManager.PassengerMoved(stats);
-        var coinsCounterText = GameObject.FindGameObjectWithTag(Tags.CoinsCounter).GetComponent<TMPro.TextMeshProUGUI>();
-        var coins = StatsManager.shared.coins.ToString();
-        coinsCounterText.text = coins;
-
-        if(stats > 0)
-        {
-            CMDebug.TextPopupMouse("+ " + stats);
-        }
-        else
-        {
-            CMDebug.TextPopupMouse("" + stats);
-        }
-
-        var coinIcon = GameObject.FindGameObjectWithTag(Tags.CoinsIcon);
-
-        LeanTween.scale(coinIcon, new Vector3(1.2f, 1.2f, 1.2f), 0.5f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(() =>
-        {
-            LeanTween.scale(coinIcon, new Vector3(0.8f, 0.8f, 0.8f), 0.2f);
-        });
-        LeanTween.rotateAroundLocal(coinIcon, new Vector3(0, 1, 0), 360, 0.5f);
     }
 
     private void OnPassengerDragged()

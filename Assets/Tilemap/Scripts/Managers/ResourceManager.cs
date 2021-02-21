@@ -29,17 +29,29 @@ public class ResourceManager : MonoBehaviour
         public Passenger randomPassenger()
         {
             var passengersCount = passengers.Length;
-            var randomNumber =  Random.RandomRange(0, passengersCount);
+            var randomNumber =  Random.Range(0, passengersCount);
             var passenger = new Passenger();
             passenger.image = passengers[randomNumber];
             return passenger;
         }
 
-        public Station randomStation()
+        public Station GetRandomStation()
         {
             var stationsCount = stations.Length;
-            var randomNumber = Random.RandomRange(0, stationsCount);
-            return stations[randomNumber];
+            var originStationIndex = Random.Range(0, stationsCount);
+            return stations[originStationIndex];
+        }
+
+        public (Station, Station) GetStationConfigurations()
+        {
+            var stationsCount = stations.Length;
+            var destinationStationIndex = Random.Range(0, 1) == 1 ? 0 : stationsCount-1;
+
+            var positionThreshold = Random.Range(0, 4);
+            var mediumPoint = stationsCount / 2;
+
+            var originStationIndex = Random.Range(mediumPoint - positionThreshold, mediumPoint + positionThreshold);
+            return (stations[originStationIndex], stations[destinationStationIndex]);
         }
     }
 }

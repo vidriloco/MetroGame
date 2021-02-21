@@ -33,4 +33,8 @@ public struct Tags
     public static string CurrentStationTitleLabel = "current-station-title-label";
     public static string CurrentStationNameLabel = "current-station-name-label";
 
+    public static string BoundStationIcon = "bound-station-icon";
+    public static string BoundStationTitleLabel = "bound-station-title-label";
+    public static string BoundStationNameLabel = "bound-station-name-label";
+
 }

@@ -17,7 +17,6 @@ public class PlatformController : MonoBehaviour
     private readonly float startWaitTime;
     private readonly float offset = 10;
 
-    private Station currentStation;
     private ResourceManager resourceManager;
 
     private void Start()
@@ -26,13 +25,8 @@ public class PlatformController : MonoBehaviour
 
         tilemap = GetComponentInChildren<UnityEngine.Tilemaps.Tilemap>();
         platform = GameObject.FindGameObjectWithTag(Tags.Platform);
-        currentStation = resourceManager.knownImages.randomStation();
 
-        // TODO: Move out the import UI
-        var stationImage = GameObject.FindGameObjectWithTag(Tags.CurrentStationIcon).GetComponent<Image>();
-        stationImage.sprite = currentStation.bigIcon;
-        var stationNameLabel = GameObject.FindGameObjectWithTag(Tags.CurrentStationNameLabel).GetComponent<TMPro.TextMeshProUGUI>();
-        stationNameLabel.text = currentStation.name;
+        GameManager.manager.SetResourcesObject(resourceManager);
 
         SpawnPassengers();
         StartCoroutine(ReSpawnPassengers());
@@ -48,11 +42,6 @@ public class PlatformController : MonoBehaviour
         StartCoroutine(ReSpawnPassengers());
     }
 
-    public Station CurrentStation()
-    {
-        return currentStation;
-    }
-
     private void SpawnPassengers()
     {
 
@@ -62,7 +51,7 @@ public class PlatformController : MonoBehaviour
             var position = RandomPosition();
 
             var passengerData = resourceManager.knownImages.randomPassenger();
-            var stationData = resourceManager.knownImages.randomStation();
+            var stationData = resourceManager.knownImages.GetRandomStation();
 
             PassengerGenerator.Instance.GenerateWith(position, passengerData, platform, Area.Platform, stationData);
 
