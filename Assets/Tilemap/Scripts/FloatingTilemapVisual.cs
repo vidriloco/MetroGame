@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -71,6 +72,7 @@ public class FloatingTilemapVisual
 
     private void GeneratePassengerLayoutUsing(GameObject parentObject)
     {
+        GameManager.manager.ClearPassengerSeats();
         var passengerHolder = new GameObject();
 
         for (int x = 0; x < grid.GetWidth(); x++)
@@ -80,8 +82,9 @@ public class FloatingTilemapVisual
                 Vector3 position = grid.GetWorldPosition(x, y);
                 var passengerData = resourceManager.knownImages.GetRandomPassenger();
                 var stationData = resourceManager.knownImages.GetRandomStation();
-
-                PassengerGenerator.Instance.GenerateWith(position, passengerData, passengerHolder, Area.Train, stationData);
+                var passengerObject = PassengerGenerator.Instance.GenerateWith(position, passengerData, passengerHolder, Area.Train, stationData);
+                passengerObject.name = Guid.NewGuid().ToString();
+                GameManager.manager.RegisterPassengerAtSeat(passengerObject.name, passengerObject.transform.localPosition);
             }
         }
 

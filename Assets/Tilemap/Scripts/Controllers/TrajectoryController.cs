@@ -8,10 +8,12 @@ public enum VehicleStatus
 {
     OpenDoors,
     CloseDoors,
+    NotifyCloseDoors,
     WillDepart,
     IsArriving,
     Gone,
-    WillArrive
+    WillArrive,
+    ReadyToDepart
 }
 
 public class TrajectoryController : MonoBehaviour
@@ -33,6 +35,7 @@ public class TrajectoryController : MonoBehaviour
     private bool arrivingUniqueNotification = false;
     private bool departingUniqueNotification = false;
     private bool closingDoorsUniqueNotification = false;
+    private bool readyToDepartUniqueNotification = false;
 
     public event TrajectoryChangedHandler TrajectoryStatusChanged;
 
@@ -84,6 +87,7 @@ public class TrajectoryController : MonoBehaviour
         arrivingUniqueNotification = false;
         closingDoorsUniqueNotification = false;
         departingUniqueNotification = false;
+        readyToDepartUniqueNotification = false;
         shouldDepart = false;
 
         var floatingTilemap = BuildRandomPassengersLayout();
@@ -141,12 +145,23 @@ public class TrajectoryController : MonoBehaviour
             movingVehicle.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
             if(elapsedTime == 0) { TrajectoryStatusChanged?.Invoke(VehicleStatus.OpenDoors); }
-            
-            if (Math.Abs(waitingTime-elapsedTime) <= 5) {
-                if(!closingDoorsUniqueNotification)
+
+            if (!closingDoorsUniqueNotification && Math.Abs(waitingTime - elapsedTime) >= 8 && Math.Abs(waitingTime - elapsedTime) <= 10)
+            {
+                TrajectoryStatusChanged?.Invoke(VehicleStatus.NotifyCloseDoors);
+                closingDoorsUniqueNotification = true;
+            }
+
+            if (Math.Abs(waitingTime-elapsedTime) <= 6) {
+                TrajectoryStatusChanged?.Invoke(VehicleStatus.CloseDoors);
+            }
+
+            if(Math.Abs(waitingTime-elapsedTime) <= 3)
+            {
+                if (!readyToDepartUniqueNotification)
                 {
-                    TrajectoryStatusChanged?.Invoke(VehicleStatus.CloseDoors);
-                    closingDoorsUniqueNotification = true;
+                    TrajectoryStatusChanged?.Invoke(VehicleStatus.ReadyToDepart);
+                    readyToDepartUniqueNotification = true;
                 }
             }
 

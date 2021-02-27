@@ -23,7 +23,7 @@ public class PassengerGenerator : MonoBehaviour
         }
     }
 
-    public void GenerateWith(Vector3 position, Passenger passengerData, GameObject parent, Area area, Station? stationData)
+    public VisualPassenger GenerateWith(Vector3 position, Passenger passengerData, GameObject parent, Area area, Station? stationData)
     {
         var passenger = VisualPassenger.SpawnWith(visualPassenger, parent, position, passengerData, area);
 
@@ -31,5 +31,7 @@ public class PassengerGenerator : MonoBehaviour
         {
             VisualStation.SpawnWith(visualStation, passenger.gameObject, position, stationData.GetValueOrDefault(), area, new Vector3(0, 3));
         }
+
+        return passenger;
     }
 }

@@ -23,12 +23,26 @@ public struct StatsModel
     }
 }
 
+public struct Seat
+{
+    public bool isFree;
+    public Vector3 position;
+
+    public Seat(bool isFree, Vector3 position)
+    {
+        this.isFree = isFree;
+        this.position = position;
+    }
+}
+
 public class GameManager
 {
     public static GameManager manager = new GameManager();
 
     public StatsModel stats = new StatsModel();
     public ArrayList stationList;
+
+    public Dictionary<string, Seat> seatsAvailable = new Dictionary<string, Seat>();
 
     public Station currentStation;
     public Station boundStation;
@@ -98,4 +112,48 @@ public class GameManager
         return selectedStation.identifier == currentStation.identifier ? 2 : -2;
     }
 
+    public void RegisterPassengerAtSeat(string name, Vector3 location)
+    {
+        seatsAvailable.Add(name, new Seat(false, location));
+    }
+
+    public void ClearPassengerSeats()
+    {
+        seatsAvailable.Clear();
+    }
+
+    public void FreeSeatWithID(string name)
+    {
+        var seat = new Seat(true, seatsAvailable[name].position);
+        seatsAvailable[name] = seat;
+        Debug.Log("Freed seat: " + name);
+    }
+
+    public bool HasAFreeSeat()
+    {
+        foreach (var key in seatsAvailable.Keys)
+        {
+            if (seatsAvailable[key].isFree)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Seat? GetNextFreeSeat()
+    {
+        Seat? seat = null;
+        foreach(var key in seatsAvailable.Keys)
+        {
+            if (seatsAvailable[key].isFree)
+            {
+                seat = seatsAvailable[key];
+                seatsAvailable[key] = new Seat(false, seat.GetValueOrDefault().position);
+                break;
+            }
+        }
+        return seat;
+    }
 }

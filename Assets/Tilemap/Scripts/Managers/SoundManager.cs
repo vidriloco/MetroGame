@@ -8,6 +8,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip arrivingMetro;
     [SerializeField] private AudioClip closingDoors;
     [SerializeField] private AudioClip departingMetro;
+    [SerializeField] private AudioClip pressureRelease;
 
 
     // Start is called before the first frame update
@@ -41,5 +42,10 @@ public class SoundManager : MonoBehaviour
     public void PlayMetroSoundDeparting()
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(departingMetro);
+    }
+
+    public void PlayMetroSoundReleaseAirPressure()
+    {
+        gameObject.GetComponent<AudioSource>().PlayOneShot(pressureRelease);
     }
 }

@@ -9,7 +9,7 @@ public delegate void MetroStatusChangedHandler(VehicleStatus status);
 
 public class MetroController : MonoBehaviour {
 
-    public GameObject metro
+    public GameObject Metro
     {
         get {
             return GameObject.FindGameObjectWithTag(Tags.Metro);
@@ -30,6 +30,9 @@ public class MetroController : MonoBehaviour {
 
         switch (status)
         {
+            case VehicleStatus.NotifyCloseDoors:
+                NotifyCloseDoors();
+                break;
             case VehicleStatus.CloseDoors:
                 MetroWillCloseDoors();
                 break;
@@ -44,6 +47,9 @@ public class MetroController : MonoBehaviour {
                 break;
             case VehicleStatus.Gone:
                 break;
+            case VehicleStatus.ReadyToDepart:
+                MetroEngineReadyToDepart();
+                break;
         }
     }
 
@@ -56,9 +62,19 @@ public class MetroController : MonoBehaviour {
         }
     }
 
+    private void NotifyCloseDoors()
+    {
+        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
+    }
+
     private void MetroIsArriving()
     {
         GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundArriving();
+    }
+
+    private void MetroEngineReadyToDepart()
+    {
+        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundReleaseAirPressure();
     }
 
     private void MarkPassengersWithColor(Color color)
@@ -72,18 +88,14 @@ public class MetroController : MonoBehaviour {
 
     private void MetroWillCloseDoors()
     {
-        GameObject.FindObjectOfType<SoundManager>().PlayMetroSoundClosingDoors();
-
         MarkPassengersWithColor(Color.red);
 
         GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
-        LeanTween.delayedCall(cover, 1f, () =>
-        {
-            LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
-                cover.tag = Tags.DiscardObject;
-                DetachPassengers();
-            });
-        }).setOnCompleteOnRepeat(false);
+        if(cover == null) { return; }
+        LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
+            cover.tag = Tags.DiscardObject;
+            DetachPassengers();
+        });
 
     }
 

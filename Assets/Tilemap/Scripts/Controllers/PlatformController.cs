@@ -37,7 +37,7 @@ public class PlatformController : MonoBehaviour
 
     IEnumerator ReSpawnPassengers()
     {
-        yield return new WaitForSeconds(UnityEngine.Random.Range(5, 15));
+        yield return new WaitForSeconds(UnityEngine.Random.Range(15, 30));
         SpawnPassengers();
         StartCoroutine(ReSpawnPassengers());
     }
