@@ -34,6 +34,8 @@ TagManager:
   - bound-station-icon
   - bound-station-title-label
   - bound-station-name-label
+  - station-list-image
+  - station-list
   layers:
   - Default
   - TransparentFX

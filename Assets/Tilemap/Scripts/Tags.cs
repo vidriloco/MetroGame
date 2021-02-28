@@ -37,4 +37,7 @@ public struct Tags
     public static string BoundStationTitleLabel = "bound-station-title-label";
     public static string BoundStationNameLabel = "bound-station-name-label";
 
+    public static string StationList = "station-list";
+    public static string StationListImage = "station-list-image";
+
 }

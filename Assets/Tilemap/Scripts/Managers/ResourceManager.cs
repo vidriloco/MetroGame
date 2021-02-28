@@ -46,16 +46,28 @@ public class ResourceManager : MonoBehaviour
             return stations[originStationIndex];
         }
 
-        public (Station, Station) GetStationConfigurations()
+        public (Station, Station, ArrayList) GetStationConfigurations()
         {
             var stationsCount = stations.Length;
-            var destinationStationIndex = Random.Range(0, 1) == 1 ? 0 : stationsCount-1;
 
             var positionThreshold = Random.Range(0, 4);
             var mediumPoint = stationsCount / 2;
 
+            var stationList = new ArrayList(stations);
+
             var originStationIndex = Random.Range(mediumPoint - positionThreshold, mediumPoint + positionThreshold);
-            return (stations[originStationIndex], stations[destinationStationIndex]);
+
+            if(Random.Range(0, 1) == 1)
+            {
+                stationList.Reverse();
+            }
+
+            var computedList = new ArrayList();
+            for (var i = originStationIndex; i < stationList.Count; i++)
+            {
+                computedList.Add(stationList[i]);
+            }
+            return ((Station) stationList[originStationIndex], (Station) stationList[stationList.Count-1], computedList);
         }
     }
 }

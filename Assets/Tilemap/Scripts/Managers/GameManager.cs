@@ -41,6 +41,7 @@ public class GameManager
 
     public StatsModel stats = new StatsModel();
     public ArrayList stationList;
+    public ArrayList coveredStationList;
 
     public Dictionary<string, Seat> seatsAvailable = new Dictionary<string, Seat>();
 
@@ -53,8 +54,9 @@ public class GameManager
         if(!areStationsSet)
         {
             var stations = resourceManager.knownImages.GetStationConfigurations();
-            manager.currentStation = stations.Item1;
-            manager.boundStation = stations.Item2;
+            currentStation = stations.Item1;
+            boundStation = stations.Item2;
+            coveredStationList = stations.Item3;
             stationList = new ArrayList(resourceManager.knownImages.GetStations());
             areStationsSet = true;
         }

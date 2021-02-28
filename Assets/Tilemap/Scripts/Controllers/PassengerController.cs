@@ -35,6 +35,7 @@ public class PassengerController: MonoBehaviour
 
     private bool DroppingOverPlatformBounds => PlatformBounds.Intersects(selectedPassenger.GetComponent<BoxCollider2D>().bounds);
     private bool DraggingPlatformPassenger => selectedPassenger.CompareTag(Tags.PassengerInPlatform);
+    private bool PassengersCanGoInAndOutOfTrain => metroStatus == VehicleStatus.OpenDoors || metroStatus == VehicleStatus.NotifyCloseDoors;
 
     private bool DroppingOverMetroBounds
     {
@@ -107,8 +108,7 @@ public class PassengerController: MonoBehaviour
             {
 
                 // Allow passengers to be dropped inside when doors are still open and spaces free
-                if (metroStatus == VehicleStatus.OpenDoors ||
-                    metroStatus == VehicleStatus.NotifyCloseDoors && GameManager.manager.HasAFreeSeat())
+                if (PassengersCanGoInAndOutOfTrain && GameManager.manager.HasAFreeSeat())
                 {
                     passengerCollider.tag = Tags.Passenger;
                     InboardChoosenPassenger();
@@ -126,7 +126,7 @@ public class PassengerController: MonoBehaviour
         {
             if (DroppingOverPlatformBounds)
             {
-                if (metroStatus == VehicleStatus.OpenDoors)
+                if (PassengersCanGoInAndOutOfTrain)
                 {
                     passengerCollider.tag = Tags.Passenger;
                     DismissOffboardedPassenger();
@@ -195,7 +195,6 @@ public class PassengerController: MonoBehaviour
 
     private void OnPassengerSelected()
     {
-        if(selectedPassenger == null) { return; }
 
         Vector2 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
         RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);

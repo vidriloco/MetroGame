@@ -17,7 +17,7 @@ public class UIController : MonoBehaviour
         gameManager = GameManager.manager.SetResourcesObject(resourceManager);
 
         SetCurrentStationInformation();
-        SetBoundStationInformation();
+        SetStationListInformation();
     }
 
     // Update is called once per frame
@@ -59,11 +59,23 @@ public class UIController : MonoBehaviour
         stationNameLabel.text = gameManager.currentStation.name;
     }
 
-    void SetBoundStationInformation()
+    void SetStationListInformation()
     {
-        var stationImage = GameObject.FindGameObjectWithTag(Tags.BoundStationIcon).GetComponent<Image>();
-        stationImage.sprite = gameManager.boundStation.bigIcon;
-        var stationNameLabel = GameObject.FindGameObjectWithTag(Tags.BoundStationNameLabel).GetComponent<TMPro.TextMeshProUGUI>();
-        stationNameLabel.text = gameManager.boundStation.name;
+        var stationList = GameObject.FindGameObjectWithTag(Tags.StationList);
+        var baseStation = GameObject.FindGameObjectWithTag(Tags.StationListImage);
+
+        var orderedList = gameManager.coveredStationList;
+        orderedList.Reverse();
+
+        for (var i = 0; i < orderedList.Count-1; i++)
+        {
+            Station station = (Station)orderedList[i];
+            Debug.Log(station.name);
+            var stationImageObject = GameObject.Instantiate(baseStation, stationList.transform);
+            stationImageObject.GetComponent<Image>().rectTransform.localScale = new Vector3(1, 1, 1);
+            stationImageObject.GetComponent<Image>().sprite = station.bigIcon;
+        }
+
+        GameObject.DestroyImmediate(baseStation);
     }
 }
