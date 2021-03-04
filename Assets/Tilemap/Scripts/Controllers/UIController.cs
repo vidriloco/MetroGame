@@ -62,10 +62,14 @@ public class UIController : MonoBehaviour
     void SetStationListInformation()
     {
         var stationList = GameObject.FindGameObjectWithTag(Tags.StationList);
+
         var baseStation = GameObject.FindGameObjectWithTag(Tags.StationListImage);
 
         var orderedList = gameManager.coveredStationList;
         orderedList.Reverse();
+
+        var newHeight = 110 * orderedList.Count;
+        stationList.transform.parent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
 
         for (var i = 0; i < orderedList.Count-1; i++)
         {
@@ -75,6 +79,8 @@ public class UIController : MonoBehaviour
             stationImageObject.GetComponent<Image>().rectTransform.localScale = new Vector3(1, 1, 1);
             stationImageObject.GetComponent<Image>().sprite = station.bigIcon;
         }
+
+
 
         GameObject.DestroyImmediate(baseStation);
     }

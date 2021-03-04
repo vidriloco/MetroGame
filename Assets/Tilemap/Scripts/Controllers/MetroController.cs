@@ -91,7 +91,9 @@ public class MetroController : MonoBehaviour {
         MarkPassengersWithColor(Color.red);
 
         GameObject cover = GameObject.FindGameObjectWithTag(Tags.MetroCover);
+
         if(cover == null) { return; }
+
         LeanTween.alpha(cover, 1f, 2f).setOnComplete(() => {
             cover.tag = Tags.DiscardObject;
             DetachPassengers();
