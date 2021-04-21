@@ -8,6 +8,8 @@ public class PlatformController : MonoBehaviour
 
     [SerializeField] public MetroController metroController;
 
+    private BoxCollider2D platformBoxCollider;
+
     private UnityEngine.Tilemaps.Tilemap tilemap;
     private ArrayList movingSpots = new ArrayList();
     private GameObject platform;
@@ -26,6 +28,8 @@ public class PlatformController : MonoBehaviour
         tilemap = GetComponentInChildren<UnityEngine.Tilemaps.Tilemap>();
         platform = GameObject.FindGameObjectWithTag(Tags.Platform);
 
+        platformBoxCollider = GameObject.FindGameObjectWithTag("platform-area").GetComponentInChildren<BoxCollider2D>();
+
         GameManager.manager.SetResourcesObject(resourceManager);
 
         SpawnPassengers();
@@ -33,6 +37,16 @@ public class PlatformController : MonoBehaviour
 
         metroController.MetroStatusChanged += MetroController_MetroStatusChanged;
 
+    }
+
+    private void DestroyRandomPassengers()
+    {
+        for(var idx = 0; idx < Random.Range(0,5); idx++)
+        {
+            var passenger = GameObject.FindGameObjectWithTag("passenger-in-platform");
+            LeanTween.alpha(passenger, 0, 1).setDestroyOnComplete(true);
+        }
+        
     }
 
     IEnumerator ReSpawnPassengers()
@@ -68,6 +82,7 @@ public class PlatformController : MonoBehaviour
                 break;
             case VehicleStatus.WillDepart:
                 MarkPassengersWithColor(Color.white);
+                DestroyRandomPassengers();
                 break;
             case VehicleStatus.OpenDoors:
                 SpawnPassengers();
@@ -96,8 +111,9 @@ public class PlatformController : MonoBehaviour
 
     private Vector2 RandomPosition()
     {
-        var xPosition = Random.Range(tilemap.localBounds.min.x + offset, tilemap.localBounds.max.x - offset);
-        var yPosition = Random.Range(tilemap.localBounds.min.y + offset, tilemap.localBounds.max.y - offset);
+        var xPosition = Random.Range(platformBoxCollider.bounds.min.x + offset, platformBoxCollider.bounds.max.x - offset);
+        var yPosition = Random.Range(platformBoxCollider.bounds.min.y + offset, platformBoxCollider.bounds.max.y - offset);
+        Debug.Log(xPosition + " : " + yPosition);
         return new Vector2(xPosition, yPosition);
     }
 

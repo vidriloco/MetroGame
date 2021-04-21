@@ -71,6 +71,12 @@ public class UIController : MonoBehaviour
         var newHeight = 110 * orderedList.Count;
         stationList.transform.parent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newHeight);
 
+        var screenBottomCenter = new Vector3(40, 20, 0);
+        var position = Camera.main.ScreenToWorldPoint(screenBottomCenter);
+
+        var floatingStationList = GameObject.FindGameObjectWithTag("floating-stations-list");
+        //floatingStationList.transform.position = new Vector3(position.x, position.y, 0);
+
         for (var i = 0; i < orderedList.Count-1; i++)
         {
             Station station = (Station)orderedList[i];

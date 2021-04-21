@@ -36,6 +36,8 @@ TagManager:
   - bound-station-name-label
   - station-list-image
   - station-list
+  - platform-area
+  - floating-stations-list
   layers:
   - Default
   - TransparentFX
